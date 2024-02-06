@@ -62,10 +62,11 @@ class BookingsApi {
 
       List<Booking> bookings = await fetchBlockedDays(
           startDate: df.format(firstDay), endDate: df.format(lastDay));
+      print(bookings.length);
 
       List<String> dayCategories = [];
       String holidayName = isHoliday(holidays, requestedMonth);
-      String status = '';
+      Booking? status;
       int dayCount = 1;
       Map<String, dynamic> monthCalendar = {
         // TODO Add locale below
@@ -77,11 +78,14 @@ class BookingsApi {
       for (DateTime indexDay = firstDay; !indexDay.isAfter(lastDay);) {
         dayCategories = [];
         status = bookingStatus(bookings, indexDay);
-        if (status == 'booked') {
-          dayCategories.add('booked');
-        }
-        if (status == 'requested') {
-          dayCategories.add('requested');
+
+        if (status != null) {
+          if (status.status == 'booked') {
+            dayCategories.add('booked');
+          }
+          if (status.status == 'requested') {
+            dayCategories.add('requested');
+          }
         }
         if (indexDay.isAtSameMomentAs(DateTime.now())) {
           dayCategories.add('today');
@@ -90,6 +94,7 @@ class BookingsApi {
         holidayName = isHoliday(holidays, indexDay);
 
         weekRow.add({
+          'bookingID': status != null ? status.id : '',
           'date': indexDay,
           'weekDay': getWeekday(indexDay),
           'bookingStatus': dayCategories.isNotEmpty ? dayCategories : 'none',
@@ -137,6 +142,7 @@ class BookingsApi {
         if (booking['startDate'] == booking['endDate']) {
           booking['blockedDay'] = (df.format(booking['startDate']));
           blockedDays.add({
+            'id': booking['_id'].toString(),
             'requestedOn': booking['requestedOn'],
             'confirmedOn': booking['confirmedOn'],
             'startDate': booking['startDate'],
@@ -148,14 +154,15 @@ class BookingsApi {
         }
 
         if (booking['endDate'].isAfter(booking['startDate'])) {
-          DateTime startDay =
-              DateFormat(settings['alterBahnhofDateFormat']).parse(start);
-          DateTime endDay =
-              DateFormat(settings['alterBahnhofDateFormat']).parse(start);
-          for (DateTime indexDay = startDay;
-              indexDay.isBefore(endDay);
-              indexDay.add(Duration(days: 1))) {
+          // DateTime startDay =
+          //     DateFormat(settings['alterBahnhofDateFormat']).parse(start);
+          // DateTime endDay =
+          //     DateFormat(settings['alterBahnhofDateFormat']).parse(start);
+          DateTime indexDay = booking['startDate'];
+          DateTime endDate = booking['endDate'].add(Duration(days: 1));
+          do {
             blockedDays.add({
+              'id': booking['_id'].toString(),
               'requestedOn': booking['requestedOn'],
               'confirmedOn': booking['confirmedOn'],
               'startDate': indexDay,
@@ -164,7 +171,8 @@ class BookingsApi {
               'status': booking['status'],
               'guestCount': booking['guestCount'],
             });
-          }
+            indexDay = indexDay.add(Duration(days: 1));
+          } while (indexDay.isBefore(endDate));
         }
       });
       return Response.ok(
@@ -298,13 +306,13 @@ String isHoliday(List<Map<String, dynamic>> holidaysOfMonth, DateTime date) {
   return '';
 }
 
-String bookingStatus(List<Booking> bookings, DateTime date) {
+Booking? bookingStatus(List<Booking> bookings, DateTime date) {
   for (Booking booking in bookings) {
     if (date.isAfter(booking.endDate) || date.isBefore(booking.startDate)) {
       continue;
     } else {
-      return booking.status;
+      return booking;
     }
   }
-  return '';
+  return null;
 }
