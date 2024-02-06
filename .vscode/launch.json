@@ -20,7 +20,7 @@
       "program": "lib/main.dart"
     },
     {
-      "name": "csv2mongo",
+      "name": "csv2mongo (dart)",
       "cwd": "csv2mongo",
       "request": "launch",
       "type": "dart",
@@ -28,7 +28,7 @@
       "args": ["./assets/export.csv"],
     },
     {
-      "name": "server",
+      "name": "server (dart)",
       "cwd": "server",
       "request": "launch",
       "type": "dart",
