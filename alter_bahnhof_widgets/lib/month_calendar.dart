@@ -11,74 +11,87 @@ class MonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 350,
-      height: 200,
-      child: FutureBuilder<Map<String, dynamic>>(
-          future: getCalendarBasics(month),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator(
-                      backgroundColor: Colors.blue, strokeWidth: 5));
-            }
-            if (snapshot.connectionState == ConnectionState.done) {
-              List weekList = snapshot.data!['weekList'];
-              Row header = Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[]);
-              List<Row> weekRows = [];
-
-              header.children.add(Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
-                height: settings['dayBoxHeight'],
-                width: settings['dayBoyWidth'],
-                color: colorScheme['primary'],
-                child: Text('KW',
-                    textAlign: TextAlign.center,
-                    style: textStyles['calendarHeader']),
-              ));
-
-              for (int i = 0; i < settings['weekDays'].length; i++) {
-                header.children.add(Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+        width: 500,
+        height: 300,
+        child: FutureBuilder<Map<String, dynamic>>(
+            future: getCalendarBasics(month),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
+                        backgroundColor: Colors.blue, strokeWidth: 5));
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                List weekList = snapshot.data!['weekList'];
+                List<Column> weekDays = <Column>[];
+                weekDays.add(Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[],
+                ));
+                // week number column
+                Column weekNo = Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[],
+                );
+                //    header weekNo
+                // TextStyle weekNoStyle = textStyles['calendarHeader']!;
+                // weekNoStyle.fontStyle = FontStyle.italic;
+                weekNo.children.add(Container(
+                  constraints:
+                      BoxConstraints(maxWidth: settings['dayBoxWidth']),
+                  margin: const EdgeInsets.all(1),
                   height: settings['dayBoxHeight'],
-                  width: settings['dayBoyWidth'],
+                  width: settings['dayBoxWidth'],
                   color: colorScheme['primary'],
-                  child: Text(settings['weekDays'][i],
+                  child: Text('KW',
                       textAlign: TextAlign.center,
                       style: textStyles['calendarHeader']),
                 ));
-              }
-              weekRows.add(header);
 
-              Map<String, dynamic> dayData = {};
-              int dayNo = 0;
-              DateTime dayAsDateTime = DateTime.now();
-              Color fontColor = Colors.black;
-              Color background = Colors.white;
-              FontWeight fontWeight = FontWeight.normal;
+                //    weekNos
+                for (int i = 0; i < weekList.length; i++) {
+                  weekNo.children.add(Container(
+                      constraints:
+                          BoxConstraints(maxWidth: settings['dayBoxWidth']),
+                      padding: const EdgeInsets.fromLTRB(5, 0, 15, 0),
+                      margin: const EdgeInsets.all(1),
+                      height: settings['dayBoxHeight'],
+                      width: settings['dayBoxWidth'],
+                      color: colorScheme['greySuperLight'],
+                      child: Text(
+                        weekList[i]['weekNo'].toString(),
+                        textAlign: TextAlign.right,
+                        style: textStyles['weekNo'],
+                      )));
+                }
+                weekDays.add(weekNo);
 
-              for (var week in weekList) {
-                Row weekRow = Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[]);
-                weekRow.children.add(Container(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                for (int i = 0; i < settings['weekDays'].length; i++) {
+                  weekDays.add(Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[]));
+
+                  // header
+                  weekDays.last.children.add(Container(
+                    constraints:
+                        BoxConstraints(maxWidth: settings['dayBoxWidth']),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    margin: const EdgeInsets.all(1),
                     height: settings['dayBoxHeight'],
-                    width: settings['dayBoyWidth'],
-                    color: colorScheme['greySuperLight'],
-                    child: Text(
-                      week['weekNo'].toString(),
-                      textAlign: TextAlign.center,
-                      style: textStyles['weekNo'],
-                    )));
-                for (int day = 0; day < week['weekDays'].length; day++) {
-                  dayData = week['weekDays'][day];
+                    width: settings['dayBoxWidth'],
+                    color: colorScheme['primary'],
+                    child: Text(settings['weekDays'][i],
+                        textAlign: TextAlign.center,
+                        style: textStyles['calendarHeader']),
+                  ));
 
+                  // weekDay of week
                   // Formatting table
                   //              background  font       font
                   //              color       color      style  hover
-                  //  header      dark grey   black      normal KW: Kalenderwoche, weekday name
+                  //  header      primary     white      normal KW: Kalenderwoche, weekday name
                   //  Mo-Sa       grey        black      bold   -
                   //  So          grey        black      bold   -
                   //  normal day  white       grey       normal -
@@ -94,71 +107,85 @@ class MonthCalendar extends StatelessWidget {
                   //  booked      grey        green      normal Holidayname \n Name (requestedOn/confirmedOn): type \n comment
                   //  holiday and
                   //  requested   grey        lightgreen normal Holidayname Name (requestedOn): type \n comment
-                  dayAsDateTime = DateTime.parse(dayData['date']);
-                  dayNo = dayAsDateTime.day;
-                  background = Colors.white;
-                  fontWeight = FontWeight.normal;
-                  fontColor = Colors.black;
+                  for (int week = 0; week < weekList.length; week++) {
+                    Map<String, dynamic> day = weekList[week]['weekDays'][i];
+                    Color fontColor = Colors.black;
+                    FontWeight fontWeight = FontWeight.normal;
+                    Color backgroundColor = Colors.white;
 
-                  // Today
-                  if (dayAsDateTime.isAtSameMomentAs(DateTime.now())) {
-                    background = Colors.white;
-                    fontColor = Colors.blue;
-                    fontWeight = FontWeight.normal;
-                  }
-                  // Booking status
-                  if (dayData['bookingStatus'] == 'booked') {
-                    background = colorScheme['primary']!;
-                    fontColor = Colors.white;
-                    fontWeight = FontWeight.normal;
-                  }
+                    if (day['bookingStatus'] == 'booked') {
+                      fontWeight = FontWeight.normal;
+                      backgroundColor = colorScheme['primaryLight']!;
 
-                  if (dayData['bookingStatus'] == 'requested') {
-                    background = colorScheme['primaryLight']!;
-                    fontColor = Colors.white;
-                    fontWeight = FontWeight.normal;
-                  }
-                  // Weekend
-                  if (['Sa', 'So'].contains(dayData['weekDay'])) {
-                    background = colorScheme['greyLight']!;
-                    fontColor = Colors.black;
-                    fontWeight = FontWeight.normal;
-                  }
+                      if (DateTime.now()
+                          .isAtSameMomentAs(DateTime.parse(day['date']))) {
+                        fontColor = Colors.blue;
+                      } else {
+                        fontColor = Colors.white;
+                      }
+                    }
 
-                  weekRow.children.add(Container(
-                    padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                    height: settings['dayBoxHeight'],
-                    width: settings['dayBoyWidth'],
-                    color: background,
-                    child: Text(
-                      dayNo.toString(),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "Arvo",
-                        fontWeight: fontWeight,
-                        fontSize: 20,
-                        color: fontColor,
-                      ),
-                    ),
-                  ));
+                    if (day['bookingStatus'] == 'requested') {
+                      fontWeight = FontWeight.normal;
+                      backgroundColor = colorScheme['primary']!;
+
+                      if (DateTime.now()
+                          .isAtSameMomentAs(DateTime.parse(day['date']))) {
+                        fontColor = Colors.blue;
+                      } else {
+                        fontColor = Colors.white;
+                      }
+                    }
+                    weekDays.last.children.add(Container(
+                      padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+                      alignment: Alignment.centerRight,
+                      margin: const EdgeInsets.all(1),
+                      height: settings['dayBoxHeight'],
+                      width: settings['dayBoxWidth'],
+                      color: backgroundColor,
+                      child: Text(DateTime.parse(day['date']).day.toString(),
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                              fontFamily: 'Arvo',
+                              fontWeight: fontWeight,
+                              fontSize: 20,
+                              color: fontColor)),
+                    ));
+                  }
                 }
-                weekRows.add(weekRow);
+                return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 200),
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.only(bottom: 3),
+                        height: 40,
+                        // width: 150,
+                        color: Colors.black38,
+                        child: Text(snapshot.data!['month'],
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                                fontFamily: 'Arvo',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                color: Colors.white)),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: weekDays,
+                      ),
+                    ]);
+              } else {
+                return const Center(
+                    child: Text('Something went wrong!',
+                        style: TextStyle(
+                            // fontFamily: 'Railway',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.red)));
               }
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: weekRows,
-              );
-            } else {
-              return const Center(
-                  child: Text('Something went wrong!',
-                      style: TextStyle(
-                          fontFamily: 'Arvo',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.red)));
-            }
-          }),
-    );
+            }));
   }
 }

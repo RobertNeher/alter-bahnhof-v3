@@ -15,6 +15,6 @@ Map<String, dynamic> settings = {
   'alterBahnhofStartDate': '2017-09-01',
   'bookingYearSpan': 3, //years from today
   'weekDays': ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-  'dayBoxWidth': 70,
+  'dayBoxWidth': 50,
   'dayBoxHeight': 30,
 };
