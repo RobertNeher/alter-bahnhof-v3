@@ -25,7 +25,7 @@ class Booking {
   bool newsletter = false;
   bool TaCAccepted = false;
   String quoteNo = '';
-  String quoteConfirmedOn = '';
+  late DateTime quoteConfirmedOn;
   String? invoiceNo = '';
 
   Booking({
@@ -49,14 +49,14 @@ class Booking {
     bool newsletter = false,
     bool TaCAccepted = false,
     String quoteNo = '',
-    String quoteConfirmedOn = '',
+    DateTime? quoteConfirmedOn,
     String invoiceNo = '',
   }) {
     id = id;
-    requestedOn = requestedOn;
-    confirmedOn = confirmedOn;
-    startDate = startDate;
-    endDate = endDate;
+    requestedOn = requestedOn!.toUtc();
+    confirmedOn = confirmedOn != null ? confirmedOn.toUtc() : null;
+    startDate = startDate!.toUtc();
+    endDate = endDate!.toUtc();
     lastName = lastName;
     firstName = firstName;
     eMail = eMail;
@@ -72,20 +72,21 @@ class Booking {
     newsletter = newsletter;
     TaCAccepted = TaCAccepted;
     quoteNo = quoteNo;
-    quoteConfirmedOn = quoteConfirmedOn;
+    quoteConfirmedOn =
+        quoteConfirmedOn != null ? quoteConfirmedOn.toUtc() : null;
     invoiceNo = invoiceNo;
   }
 
   Booking.fromJson(Map<String, dynamic> json) {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
     id = json['_id'].toString();
-    requestedOn = df.parse(json['requestedOn']);
+    requestedOn = df.parse(json['requestedOn']).toUtc();
 
     if (json['confirmedOn'] != null) {
-      confirmedOn = df.parse(json['confirmedOn']);
+      confirmedOn = df.parse(json['confirmedOn']).toUtc();
     }
-    startDate = df.parse(json['startDate']);
-    endDate = df.parse(json['endDate']);
+    startDate = df.parse(json['startDate']).toUtc();
+    endDate = df.parse(json['endDate']).toUtc();
     lastName = json['lastName'].toString();
     firstName = json['firstName'].toString();
     eMail = json['eMail'].toString();
@@ -101,7 +102,10 @@ class Booking {
     newsletter = json['newsletter'] ??= false;
     TaCAccepted = json['TaCAccepted'] ??= false;
     quoteNo = json['quoteNo'].toString();
-    quoteConfirmedOn = json['quoteConfirmedOn'].toString();
+
+    if (json['quoteConfirmedOn'] != null) {
+      quoteConfirmedOn = json['quoteConfirmedOn'].toUtc();
+    }
     invoiceNo = json['invoiceNo'].toString();
   }
 

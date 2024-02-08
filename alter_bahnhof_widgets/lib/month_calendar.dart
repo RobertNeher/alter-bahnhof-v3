@@ -3,6 +3,7 @@ import 'package:settings/settings.dart';
 import 'package:settings/color_scheme.dart';
 import 'package:settings/text_styles.dart';
 import 'package:model/calendar.dart';
+import 'package:utils/utils.dart';
 
 class MonthCalendar extends StatelessWidget {
   DateTime month = DateTime.now();
@@ -117,8 +118,8 @@ class MonthCalendar extends StatelessWidget {
                       fontWeight = FontWeight.normal;
                       backgroundColor = colorScheme['primaryLight']!;
 
-                      if (DateTime.now()
-                          .isAtSameMomentAs(DateTime.parse(day['date']))) {
+                      if (isSameDay(
+                          DateTime.now(), DateTime.parse(day['date']))) {
                         fontColor = Colors.blue;
                       } else {
                         fontColor = Colors.white;
@@ -129,8 +130,8 @@ class MonthCalendar extends StatelessWidget {
                       fontWeight = FontWeight.normal;
                       backgroundColor = colorScheme['primary']!;
 
-                      if (DateTime.now()
-                          .isAtSameMomentAs(DateTime.parse(day['date']))) {
+                      if (isSameDay(
+                          DateTime.now(), DateTime.parse(day['date']))) {
                         fontColor = Colors.blue;
                       } else {
                         fontColor = Colors.white;

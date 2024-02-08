@@ -85,12 +85,9 @@ void main(List<String> args) async {
       continue;
     }
 
-    DateTime requestDate = df.parse(element[0]);
-    requestDate = requestDate.add(Duration(days: 1));
-    DateTime startDate = df.parse(element[1]);
-    startDate = startDate.add(Duration(days: 1));
-    DateTime endDate = df.parse(element[2]);
-    endDate = endDate.add(Duration(days: 1));
+    DateTime requestDate = df.parse(element[0], true);
+    DateTime startDate = df.parse(element[1], true);
+    DateTime endDate = df.parse(element[2], true);
 
     colStatus = element[16];
 

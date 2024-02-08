@@ -7,6 +7,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:settings/settings.dart';
 import 'package:utils/utils.dart';
 import 'package:model/booking.dart';
+import 'package:model/holiday.dart';
 
 class BookingsApi {
   DbCollection bookingsCollection;
@@ -45,24 +46,23 @@ class BookingsApi {
       DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
       List<Map<String, dynamic>> weekRow = [];
       Map<String, dynamic> parameters = request.url.queryParameters;
-      DateTime requestedMonth = DateTime(
+      DateTime requestedMonth = DateTime.utc(
           int.parse(parameters['month'].substring(0, 4)),
           int.parse(parameters['month'].substring(5, 7)),
           1);
       // Normalize month's begin to Monday of previous month
-      lastDay = DateTime(requestedMonth.year, requestedMonth.month, 0);
+      lastDay = DateTime.utc(requestedMonth.year, requestedMonth.month, 0);
       firstDay = lastDay.weekday < 7
           ? requestedMonth.add(Duration(days: -lastDay.weekday))
-          : lastDay.add(Duration(days: 1));
+          : lastDay.add(Duration(seconds: 86400));
       List<Map<String, dynamic>> holidays = await getHolidays(requestedMonth);
 
       // Normalize month's end to Sunday of subsequent month
-      lastDay = DateTime(requestedMonth.year, requestedMonth.month + 1, 0);
+      lastDay = DateTime.utc(requestedMonth.year, requestedMonth.month + 1, 0);
       lastDay = lastDay.add(Duration(days: 7 - lastDay.weekday));
 
       List<Booking> bookings = await fetchBlockedDays(
           startDate: df.format(firstDay), endDate: df.format(lastDay));
-      print(bookings.length);
 
       List<String> dayCategories = [];
       String holidayName = isHoliday(holidays, requestedMonth);
@@ -87,7 +87,7 @@ class BookingsApi {
             dayCategories.add('requested');
           }
         }
-        if (indexDay.isAtSameMomentAs(DateTime.now())) {
+        if (isSameDay(indexDay, DateTime.now())) {
           dayCategories.add('today');
         }
 
@@ -125,14 +125,16 @@ class BookingsApi {
 
       // Default date: Starting month/year of Seminarhaus
       start = parameters['from'] ?? settings['alterBahnhofStartDate'];
-      end = parameters['to'] ?? df.format(DateTime.now());
+      end = parameters['to'] ?? df.format(DateTime.now().toUtc());
 
       await bookingsCollection
           .find(where
-            ..gte('startDate',
-                DateFormat(settings['alterBahnhofDateFormat']).parse(start))
+            ..gte(
+                'startDate',
+                DateFormat(settings['alterBahnhofDateFormat'])
+                    .parse(start, true))
             ..and(where.lte('endDate',
-                DateFormat(settings['alterBahnhofDateFormat']).parse(end))
+                DateFormat(settings['alterBahnhofDateFormat']).parse(end, true))
               ..and(where.oneFrom('status', [
                 'requested',
                 'booked',
@@ -143,10 +145,12 @@ class BookingsApi {
           booking['blockedDay'] = (df.format(booking['startDate']));
           blockedDays.add({
             'id': booking['_id'].toString(),
-            'requestedOn': booking['requestedOn'],
-            'confirmedOn': booking['confirmedOn'],
-            'startDate': booking['startDate'],
-            'endDate': booking['startDate'],
+            'requestedOn': booking['requestedOn'].toUtc(),
+            'confirmedOn': booking['confirmedOn'] != null
+                ? booking['confirmedOn'].toUtc()
+                : null,
+            'startDate': booking['startDate'].toUtc(),
+            'endDate': booking['startDate'].toUtc(),
             'eventType': booking['eventType'],
             'status': booking['status'],
             'guestCount': booking['guestCount'],
@@ -154,19 +158,17 @@ class BookingsApi {
         }
 
         if (booking['endDate'].isAfter(booking['startDate'])) {
-          // DateTime startDay =
-          //     DateFormat(settings['alterBahnhofDateFormat']).parse(start);
-          // DateTime endDay =
-          //     DateFormat(settings['alterBahnhofDateFormat']).parse(start);
           DateTime indexDay = booking['startDate'];
           DateTime endDate = booking['endDate'].add(Duration(days: 1));
           do {
             blockedDays.add({
               'id': booking['_id'].toString(),
-              'requestedOn': booking['requestedOn'],
-              'confirmedOn': booking['confirmedOn'],
-              'startDate': indexDay,
-              'endDate': indexDay,
+              'requestedOn': booking['requestedOn'].toUtc(),
+              'confirmedOn': booking['confirmedOn'] != null
+                  ? booking['confirmedOn'].toUtc()
+                  : null,
+              'startDate': indexDay.toUtc(),
+              'endDate': indexDay.toUtc(),
               'eventType': booking['eventType'],
               'status': booking['status'],
               'guestCount': booking['guestCount'],
@@ -205,7 +207,7 @@ class BookingsApi {
             ..gte(
                 'requestedOn',
                 DateFormat(settings['alterBahnhofDateFormat'])
-                    .parse(requestedAfter))
+                    .parse(requestedAfter, true))
             ..sortBy('startDate', descending: false))
           .forEach((booking) {
         days.add(booking);
@@ -299,7 +301,7 @@ class BookingsApi {
 
 String isHoliday(List<Map<String, dynamic>> holidaysOfMonth, DateTime date) {
   for (Map<String, dynamic> holiday in holidaysOfMonth) {
-    if ((holiday['date'] as DateTime).isAtSameMomentAs(date)) {
+    if (isSameDay(holiday['date'], date)) {
       return holiday['name'];
     }
   }
@@ -308,7 +310,14 @@ String isHoliday(List<Map<String, dynamic>> holidaysOfMonth, DateTime date) {
 
 Booking? bookingStatus(List<Booking> bookings, DateTime date) {
   for (Booking booking in bookings) {
-    if (date.isAfter(booking.endDate) || date.isBefore(booking.startDate)) {
+    //Normalization of dates
+    DateTime _endDate = DateTime(
+        booking.endDate.year, booking.endDate.month, booking.endDate.day);
+    DateTime _startDate = DateTime(
+        booking.startDate.year, booking.startDate.month, booking.startDate.day);
+    DateTime _date = DateTime(date.year, date.month, date.day);
+
+    if (_date.isAfter(_endDate) || _date.isBefore(_startDate)) {
       continue;
     } else {
       return booking;

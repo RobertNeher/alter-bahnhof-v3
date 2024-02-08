@@ -29,6 +29,12 @@ int dayOfYear(DateTime date) {
   return date.difference(DateTime(date.year, 1, 1)).inDays;
 }
 
+bool isSameDay(DateTime date, DateTime compare) {
+  return (date.year == compare.year &&
+      date.month == compare.month &&
+      date.day == compare.day);
+}
+
 String getWeekday(DateTime date) {
   // TODO: Add locale!
   String weekday = DateFormat('E').format(date).substring(0, 2);
@@ -57,33 +63,4 @@ String getWeekday(DateTime date) {
     return 'So';
   }
   return '';
-}
-
-Future<List<Map<String, dynamic>>> getHolidays(month) async {
-  DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
-  List<Map<String, dynamic>> holidays = [];
-  DateTime firstDay = DateTime(month.year, month.month, 1);
-  DateTime lastDay = DateTime(month.year, month.month + 1, 0);
-
-  Uri uri = Uri.https('openholidaysapi.org', 'PublicHolidays', {
-    'countryIsoCode': 'DE',
-    'languageIsoCode': 'DE',
-    'subdivisionCode': 'DE-BW',
-    'validFrom': df.format(firstDay),
-    'validTo': df.format(lastDay),
-  });
-
-  http.Response response = await http.get(uri,
-      headers: {HttpHeaders.acceptEncodingHeader: 'application/json'});
-  List holidayList = json.decode(response.body);
-
-  if (response.statusCode == 200) {
-    for (var holiday in holidayList) {
-      holidays.add({
-        'date': df.parse(holiday['startDate']),
-        'name': holiday['name'][0]['text']
-      });
-    }
-  }
-  return holidays;
 }
