@@ -65,7 +65,7 @@ class BookingsApi {
           startDate: df.format(firstDay), endDate: df.format(lastDay));
 
       List<String> dayCategories = [];
-      String holidayName = isHoliday(holidays, requestedMonth);
+      String holidayName = '';
       Booking? status;
       int dayCount = 1;
       Map<String, dynamic> monthCalendar = {
@@ -75,8 +75,11 @@ class BookingsApi {
         'weekList': []
       };
 
-      for (DateTime indexDay = firstDay; !indexDay.isAfter(lastDay);) {
+      DateTime indexDay = firstDay;
+
+      do {
         dayCategories = [];
+        holidayName = isHoliday(holidays, indexDay);
         status = bookingStatus(bookings, indexDay);
 
         if (status != null) {
@@ -109,8 +112,8 @@ class BookingsApi {
           weekRow = [];
         }
         dayCount++;
-        indexDay = indexDay.add(Duration(days: 1));
-      }
+        indexDay = indexDay.add(Duration(days: 1)).toUtc();
+      } while (indexDay.isBefore(lastDay));
       return Response.ok(
           json.encode(monthCalendar, toEncodable: alterBahnhofEncode),
           headers: responseHeaders);
@@ -149,6 +152,8 @@ class BookingsApi {
             'confirmedOn': booking['confirmedOn'] != null
                 ? booking['confirmedOn'].toUtc()
                 : null,
+            'lastName': booking['lastName'],
+            'firstName': booking['firstName'],
             'startDate': booking['startDate'].toUtc(),
             'endDate': booking['startDate'].toUtc(),
             'eventType': booking['eventType'],
@@ -167,6 +172,8 @@ class BookingsApi {
               'confirmedOn': booking['confirmedOn'] != null
                   ? booking['confirmedOn'].toUtc()
                   : null,
+              'lastName': booking['lastName'],
+              'firstName': booking['firstName'],
               'startDate': indexDay.toUtc(),
               'endDate': indexDay.toUtc(),
               'eventType': booking['eventType'],

@@ -79,7 +79,7 @@ class Booking {
 
   Booking.fromJson(Map<String, dynamic> json) {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
-    id = json['_id'].toString();
+    id = json['id'].toString();
     requestedOn = df.parse(json['requestedOn']).toUtc();
 
     if (json['confirmedOn'] != null) {
