@@ -1,1 +1,0 @@
-docker exec -u 0 -it 510f1862db9fa1f662ee975e368eb4252e284ea7745b62f87cfdeeed9764d834 /bin/bash
