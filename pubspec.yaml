@@ -1,0 +1,28 @@
+name: alter_bahnhof_v3
+description: "3rd major release of web infrastructure for Alter Bahnhof"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.5 <4.0.0'
+
+dependencies:
+  alter_bahnhof_widgets:
+    path: './alter_bahnhof_widgets'
+  google_fonts:
+  flutter:
+    sdk: flutter
+  intl:
+  model:
+    path: './model'
+  mongo_dart:
+  settings:
+    path: './settings'
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints:
+
+flutter:
+  uses-material-design: true

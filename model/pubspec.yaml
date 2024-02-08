@@ -1,0 +1,21 @@
+name: model
+description: The core objects of Alter Bahnhof Web Application
+version: 1.0.0
+publish_to: 'none'
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.2.5
+
+# Add regular dependencies here.
+dependencies:
+  encrypt:
+  http:
+  intl:
+  mongo_dart:
+  settings:
+    path: '../settings'
+
+dev_dependencies:
+  lints:
+  test:
