@@ -108,15 +108,18 @@ class MonthCalendar extends StatelessWidget {
                   //  booked      grey        green      normal Holidayname \n Name (requestedOn/confirmedOn): type \n comment
                   //  holiday and
                   //  requested   grey        lightgreen normal Holidayname Name (requestedOn): type \n comment
+                  //  "outside"
+                  //  day         grey        darkGrey   normal -
                   for (int week = 0; week < weekList.length; week++) {
                     Map<String, dynamic> day = weekList[week]['weekDays'][i];
                     Color fontColor = Colors.black;
                     FontWeight fontWeight = FontWeight.normal;
                     Color backgroundColor = Colors.white;
+                    FontStyle fontStyle = FontStyle.normal;
 
-                    if (day['bookingStatus'] == 'booked') {
-                      fontWeight = FontWeight.normal;
-                      backgroundColor = colorScheme['primaryLight']!;
+                    // booked state
+                    if (day['bookingStatus'].contains('booked')) {
+                      backgroundColor = colorScheme['primary']!;
 
                       if (isSameDay(
                           DateTime.now(), DateTime.parse(day['date']))) {
@@ -126,16 +129,20 @@ class MonthCalendar extends StatelessWidget {
                       }
                     }
 
-                    if (day['bookingStatus'] == 'requested') {
-                      fontWeight = FontWeight.normal;
-                      backgroundColor = colorScheme['primary']!;
+                    if (day['bookingStatus'].contains('requested')) {
+                      backgroundColor = colorScheme['primaryLight']!;
 
-                      if (isSameDay(
-                          DateTime.now(), DateTime.parse(day['date']))) {
+                      if (day['bookingStatus'].contains('today')) {
                         fontColor = Colors.blue;
                       } else {
                         fontColor = Colors.white;
                       }
+                    }
+
+                    if (DateTime.parse(day['date']).month != month.month) {
+                      backgroundColor = colorScheme['greyLight']!;
+                      fontColor = colorScheme['grey']!;
+                      fontStyle = FontStyle.italic;
                     }
                     weekDays.last.children.add(Container(
                       padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
@@ -149,6 +156,7 @@ class MonthCalendar extends StatelessWidget {
                           style: TextStyle(
                               fontFamily: 'Arvo',
                               fontWeight: fontWeight,
+                              fontStyle: fontStyle,
                               fontSize: 20,
                               color: fontColor)),
                     ));

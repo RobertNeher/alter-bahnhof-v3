@@ -100,7 +100,7 @@ class BookingsApi {
           'bookingID': status != null ? status.id : '',
           'date': indexDay,
           'weekDay': getWeekday(indexDay),
-          'bookingStatus': dayCategories.isNotEmpty ? dayCategories : 'none',
+          'bookingStatus': dayCategories,
           'holiday': holidayName,
         });
 

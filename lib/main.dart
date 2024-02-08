@@ -22,7 +22,7 @@ class AlterBahnhofApp extends StatelessWidget {
       //   const Locale('en', ''), // English, no country code
       //   const Locale('fr', ''), // French, no country code
       // ],
-      home: Scaffold(body: MonthCalendar(month: DateTime(2024, 4, 1))),
+      home: Scaffold(body: MonthCalendar(month: DateTime(2024, 2, 1))),
     );
   }
 }
