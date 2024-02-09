@@ -44,7 +44,7 @@ class MonthCalendar extends StatelessWidget {
                   margin: const EdgeInsets.all(1),
                   height: settings['dayBoxHeight'],
                   width: settings['dayBoxWidth'],
-                  color: colorScheme['primary'],
+                  color: colorScheme['secondary'],
                   child: Text('KW',
                       textAlign: TextAlign.center,
                       style: textStyles['calendarHeader']),
@@ -82,7 +82,7 @@ class MonthCalendar extends StatelessWidget {
                     margin: const EdgeInsets.all(1),
                     height: settings['dayBoxHeight'],
                     width: settings['dayBoxWidth'],
-                    color: colorScheme['primary'],
+                    color: colorScheme['secondary'],
                     child: Text(settings['weekDays'][i],
                         textAlign: TextAlign.center,
                         style: textStyles['calendarHeader']),
@@ -113,9 +113,11 @@ class MonthCalendar extends StatelessWidget {
                   for (int week = 0; week < weekList.length; week++) {
                     Map<String, dynamic> day = weekList[week]['weekDays'][i];
                     Color fontColor = Colors.black;
+                    double fontSize = 20;
                     FontWeight fontWeight = FontWeight.normal;
                     Color backgroundColor = Colors.white;
                     FontStyle fontStyle = FontStyle.normal;
+                    String dayText = DateTime.parse(day['date']).day.toString();
 
                     // booked state
                     if (day['bookingStatus'].contains('booked')) {
@@ -139,11 +141,23 @@ class MonthCalendar extends StatelessWidget {
                       }
                     }
 
+                    if (day['holiday'].isNotEmpty) {
+                      if (!day['bookingStatus'].contains('today')) {
+                        backgroundColor = colorScheme['secondaryLight']!;
+                        fontStyle = FontStyle.italic;
+                        fontSize = 14;
+                        fontWeight = FontWeight.normal;
+                        dayText += '\n${day["holiday"]}';
+                      }
+                    }
+
                     if (DateTime.parse(day['date']).month != month.month) {
-                      backgroundColor = colorScheme['greyLight']!;
+                      backgroundColor =
+                          const Color.fromARGB(255, 224, 224, 224);
                       fontColor = colorScheme['grey']!;
                       fontStyle = FontStyle.italic;
                     }
+
                     weekDays.last.children.add(Container(
                       padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                       alignment: Alignment.centerRight,
@@ -151,7 +165,7 @@ class MonthCalendar extends StatelessWidget {
                       height: settings['dayBoxHeight'],
                       width: settings['dayBoxWidth'],
                       color: backgroundColor,
-                      child: Text(DateTime.parse(day['date']).day.toString(),
+                      child: Text(dayText,
                           textAlign: TextAlign.right,
                           style: TextStyle(
                               fontFamily: 'Arvo',
