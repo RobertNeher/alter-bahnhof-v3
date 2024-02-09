@@ -10,19 +10,37 @@ class AlterBahnhofApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int startMonth = 1;
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // localizationsDelegates: [
-      //   AppLocalizations.delegate,
-      //   GlobalMaterialLocalizations.delegate,
-      //   GlobalWidgetsLocalizations.delegate,
-      // ],
-      // supportedLocales: [
-      //   const Locale('de', ''), // German, no country code
-      //   const Locale('en', ''), // English, no country code
-      //   const Locale('fr', ''), // French, no country code
-      // ],
-      home: Scaffold(body: MonthCalendar(month: DateTime(2024, 2, 1))),
-    );
+        debugShowCheckedModeBanner: false,
+        // localizationsDelegates: [
+        //   AppLocalizations.delegate,
+        //   GlobalMaterialLocalizations.delegate,
+        //   GlobalWidgetsLocalizations.delegate,
+        // ],
+        // supportedLocales: [
+        //   const Locale('de', ''), // German, no country code
+        //   const Locale('en', ''), // English, no country code
+        //   const Locale('fr', ''), // French, no country code
+        // ],
+        home: Scaffold(
+            body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            MonthCalendar(month: DateTime(2024, startMonth, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+            MonthCalendar(month: DateTime(2024, startMonth++, 1)),
+          ]),
+        )));
   }
 }

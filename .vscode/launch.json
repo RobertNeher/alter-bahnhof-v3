@@ -6,13 +6,6 @@
   "configurations": [
 
     {
-      "name": "alter-bahnhof-v3 (profile mode)",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile",
-      "program": "lib/main.dart"
-    },
-    {
       "name": "alter-bahnhof-v3 (debug mode)",
       "request": "launch",
       "type": "dart",

@@ -80,13 +80,13 @@ class Booking {
   Booking.fromJson(Map<String, dynamic> json) {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
     id = json['id'].toString();
-    requestedOn = df.parse(json['requestedOn']).toUtc();
+    requestedOn = df.parse(json['requestedOn']);
 
     if (json['confirmedOn'] != null) {
-      confirmedOn = df.parse(json['confirmedOn']).toUtc();
+      confirmedOn = df.parse(json['confirmedOn']);
     }
-    startDate = df.parse(json['startDate']).toUtc();
-    endDate = df.parse(json['endDate']).toUtc();
+    startDate = df.parse(json['startDate']);
+    endDate = df.parse(json['endDate']);
     lastName = json['lastName'].toString();
     firstName = json['firstName'].toString();
     eMail = json['eMail'].toString();
@@ -104,7 +104,7 @@ class Booking {
     quoteNo = json['quoteNo'].toString();
 
     if (json['quoteConfirmedOn'] != null) {
-      quoteConfirmedOn = json['quoteConfirmedOn'].toUtc();
+      quoteConfirmedOn = json['quoteConfirmedOn'];
     }
     invoiceNo = json['invoiceNo'].toString();
   }

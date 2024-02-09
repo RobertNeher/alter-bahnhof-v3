@@ -46,23 +46,25 @@ class BookingsApi {
       DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
       List<Map<String, dynamic>> weekRow = [];
       Map<String, dynamic> parameters = request.url.queryParameters;
-      DateTime requestedMonth = DateTime.utc(
+      DateTime requestedMonth = DateTime(
           int.parse(parameters['month'].substring(0, 4)),
           int.parse(parameters['month'].substring(5, 7)),
           1);
       // Normalize month's begin to Monday of previous month
-      lastDay = DateTime.utc(requestedMonth.year, requestedMonth.month, 0);
+      lastDay = DateTime(requestedMonth.year, requestedMonth.month, 0);
       firstDay = lastDay.weekday < 7
           ? requestedMonth.add(Duration(days: -lastDay.weekday))
-          : lastDay.add(Duration(seconds: 86400));
+          : lastDay.add(Duration(days: 1));
       List<Map<String, dynamic>> holidays = await getHolidays(requestedMonth);
 
       // Normalize month's end to Sunday of subsequent month
-      lastDay = DateTime.utc(requestedMonth.year, requestedMonth.month + 1, 0);
+      lastDay = DateTime(requestedMonth.year, requestedMonth.month + 1, 0);
       lastDay = lastDay.add(Duration(days: 7 - lastDay.weekday));
 
       List<Booking> bookings = await fetchBlockedDays(
-          startDate: df.format(firstDay), endDate: df.format(lastDay));
+          startDate: df.format(requestedMonth),
+          endDate: df.format(
+              DateTime(requestedMonth.year, requestedMonth.month + 1, 0)));
 
       List<String> dayCategories = [];
       String holidayName = '';
@@ -112,8 +114,8 @@ class BookingsApi {
           weekRow = [];
         }
         dayCount++;
-        indexDay = indexDay.add(Duration(days: 1)).toUtc();
-      } while (indexDay.isBefore(lastDay));
+        indexDay = indexDay.add(Duration(days: 1));
+      } while (!indexDay.isAfter(lastDay));
       return Response.ok(
           json.encode(monthCalendar, toEncodable: alterBahnhofEncode),
           headers: responseHeaders);
