@@ -59,7 +59,7 @@ class BookingsApi {
 
       // Normalize month's end to Sunday of subsequent month
       lastDay = DateTime(requestedMonth.year, requestedMonth.month + 1, 0);
-      lastDay = lastDay.add(Duration(days: 7 - lastDay.weekday));
+      lastDay = lastDay.add(Duration(days: 7 - lastDay.weekday + 1));
 
       List<Booking> bookings = await fetchBlockedDays(
           startDate: df.format(requestedMonth),
@@ -130,16 +130,17 @@ class BookingsApi {
 
       // Default date: Starting month/year of Seminarhaus
       start = parameters['from'] ?? settings['alterBahnhofStartDate'];
-      end = parameters['to'] ?? df.format(DateTime.now().toUtc());
+      end = parameters['to'] ?? df.format(DateTime.now());
 
       await bookingsCollection
           .find(where
-            ..gte(
-                'startDate',
+            ..gte('startDate',
+                DateFormat(settings['alterBahnhofDateFormat']).parse(start))
+            ..and(where.lte(
+                'endDate',
                 DateFormat(settings['alterBahnhofDateFormat'])
-                    .parse(start, true))
-            ..and(where.lte('endDate',
-                DateFormat(settings['alterBahnhofDateFormat']).parse(end, true))
+                    .parse(end)
+                    .add(Duration(days: 1)))
               ..and(where.oneFrom('status', [
                 'requested',
                 'booked',
