@@ -163,6 +163,23 @@ Future<List<Booking>> fetchBookings(List<String> statusFilter,
   return bookings;
 }
 
+Future<Map<String, dynamic>>? fetchBookingDetail({String? id}) async {
+  http.Response response;
+
+  Uri uri = Uri.http(
+      '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
+      '/bookings/id=$id');
+
+  response = await http
+      .get(uri, headers: {HttpHeaders.acceptHeader: 'application/json'});
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    return {};
+  }
+}
+
 Future<List<Booking>> fetchBlockedDays(
     {String? startDate, String? endDate}) async {
   List<Booking> blockedDays = <Booking>[];
