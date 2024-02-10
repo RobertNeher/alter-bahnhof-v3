@@ -7,7 +7,7 @@ import 'package:settings/settings.dart';
 class Booking {
   String id = '';
   late DateTime requestedOn;
-  late DateTime confirmedOn;
+  String confirmedOn = '';
   late DateTime startDate;
   late DateTime endDate;
   String lastName = '';
@@ -25,13 +25,12 @@ class Booking {
   bool newsletter = false;
   bool TaCAccepted = false;
   String quoteNo = '';
-  late DateTime quoteConfirmedOn;
   String? invoiceNo = '';
 
   Booking({
     String id = '',
     DateTime? requestedOn,
-    DateTime? confirmedOn,
+    String confirmedOn = '',
     DateTime? startDate,
     DateTime? endDate,
     String lastName = '',
@@ -49,14 +48,13 @@ class Booking {
     bool newsletter = false,
     bool TaCAccepted = false,
     String quoteNo = '',
-    DateTime? quoteConfirmedOn,
     String invoiceNo = '',
   }) {
     id = id;
-    requestedOn = requestedOn!.toUtc();
-    confirmedOn = confirmedOn != null ? confirmedOn.toUtc() : null;
-    startDate = startDate!.toUtc();
-    endDate = endDate!.toUtc();
+    requestedOn = requestedOn;
+    confirmedOn = confirmedOn;
+    startDate = startDate;
+    endDate = endDate;
     lastName = lastName;
     firstName = firstName;
     eMail = eMail;
@@ -72,8 +70,6 @@ class Booking {
     newsletter = newsletter;
     TaCAccepted = TaCAccepted;
     quoteNo = quoteNo;
-    quoteConfirmedOn =
-        quoteConfirmedOn != null ? quoteConfirmedOn.toUtc() : null;
     invoiceNo = invoiceNo;
   }
 
@@ -81,10 +77,7 @@ class Booking {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
     id = json['id'].toString();
     requestedOn = df.parse(json['requestedOn']);
-
-    if (json['confirmedOn'] != null) {
-      confirmedOn = df.parse(json['confirmedOn']);
-    }
+    confirmedOn = json['confirmedOn'];
     startDate = df.parse(json['startDate']);
     endDate = df.parse(json['endDate']);
     lastName = json['lastName'].toString();
@@ -102,10 +95,6 @@ class Booking {
     newsletter = json['newsletter'] ??= false;
     TaCAccepted = json['TaCAccepted'] ??= false;
     quoteNo = json['quoteNo'].toString();
-
-    if (json['quoteConfirmedOn'] != null) {
-      quoteConfirmedOn = json['quoteConfirmedOn'];
-    }
     invoiceNo = json['invoiceNo'].toString();
   }
 
@@ -130,7 +119,6 @@ class Booking {
         'newsletter': newsletter,
         'TuCAccepted': TaCAccepted,
         'quoteNo': quoteNo,
-        'quoteConfirmedOn': quoteConfirmedOn,
         'invoiceNo': invoiceNo,
       };
 }

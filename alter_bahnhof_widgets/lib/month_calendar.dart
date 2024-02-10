@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:model/booking.dart';
 import 'package:settings/settings.dart';
 import 'package:settings/color_scheme.dart';
 import 'package:settings/text_styles.dart';
@@ -11,9 +12,8 @@ class MonthCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: 500,
-        height: 300,
+    return Container(
+        color: const Color.fromARGB(255, 237, 237, 237),
         child: FutureBuilder<Map<String, dynamic>>(
             future: getCalendarBasics(month),
             builder: (context, snapshot) {
@@ -39,16 +39,18 @@ class MonthCalendar extends StatelessWidget {
                 // TextStyle weekNoStyle = textStyles['calendarHeader']!;
                 // weekNoStyle.fontStyle = FontStyle.italic;
                 weekNo.children.add(Container(
-                  constraints:
-                      BoxConstraints(maxWidth: settings['dayBoxWidth']),
-                  margin: const EdgeInsets.all(1),
-                  height: settings['dayBoxHeight'],
-                  width: settings['dayBoxWidth'],
-                  color: colorScheme['secondary'],
-                  child: Text('KW',
-                      textAlign: TextAlign.center,
-                      style: textStyles['calendarHeader']),
-                ));
+                    constraints:
+                        BoxConstraints(maxWidth: settings['dayBoxWidth']),
+                    margin: const EdgeInsets.all(1),
+                    height: settings['dayBoxHeight'],
+                    width: settings['dayBoxWidth'],
+                    color: colorScheme['secondary'],
+                    child: Tooltip(
+                      message: 'Kalenderwoche',
+                      child: Text('KW',
+                          textAlign: TextAlign.center,
+                          style: textStyles['calendarHeader']),
+                    )));
 
                 //    weekNos
                 for (int i = 0; i < weekList.length; i++) {
@@ -92,9 +94,7 @@ class MonthCalendar extends StatelessWidget {
                   // Formatting table
                   //              background  font       font
                   //              color       color      style  hover
-                  //  header      primary     white      normal KW: Kalenderwoche, weekday name
-                  //  Mo-Sa       grey        black      bold   -
-                  //  So          grey        black      bold   -
+                  //  header      secondary   white      bold   KW: Kalenderwoche, weekday name
                   //  normal day  white       grey       normal -
                   //  today       white       blue       normal -
                   //  holiday     lightGrey   black      normal Name of holiday
@@ -117,40 +117,54 @@ class MonthCalendar extends StatelessWidget {
                     FontWeight fontWeight = FontWeight.normal;
                     Color backgroundColor = Colors.white;
                     FontStyle fontStyle = FontStyle.normal;
+                    String toolTip = '';
                     String dayText = DateTime.parse(day['date']).day.toString();
 
-                    // booked state
-                    if (day['bookingStatus'].contains('booked')) {
-                      backgroundColor = colorScheme['primary']!;
+                    if (DateTime.parse(day['date']).isBefore(DateTime.now())) {
+                      Color fontColor = Color.fromARGB(255, 255, 54, 54);
+                      double fontSize = 20;
+                      FontWeight fontWeight = FontWeight.normal;
+                      Color backgroundColor = Color.fromARGB(255, 109, 97, 97);
+                      FontStyle fontStyle = FontStyle.normal;
+                    } else {
+                      // booked state
+                      if (day['bookingStatus'].contains('booked')) {
+                        backgroundColor = colorScheme['primary']!;
 
-                      if (isSameDay(
-                          DateTime.now(), DateTime.parse(day['date']))) {
-                        fontColor = Colors.blue;
-                      } else {
-                        fontColor = Colors.white;
+                        if (isSameDay(
+                            DateTime.now(), DateTime.parse(day['date']))) {
+                          fontColor = Colors.blue;
+                        } else {
+                          fontColor = Colors.white;
+                        }
+                        String id = day['bookingID']
+                            .substring(10, day['bookingID'].length - 2);
+                        fetchBookingDetail(id: id)!.then((value) {
+                          toolTip =
+                              '${value["lastName"]}, ${value["firstName"]}\nAngefragt am: ${value["requestedOn"]}\nBestätigt am ${value["confirmedOn"]}\nBemerkung: ${value["comment"]}';
+                        });
+                      }
+
+                      if (day['bookingStatus'].contains('requested')) {
+                        backgroundColor = colorScheme['primaryLight']!;
+
+                        if (day['bookingStatus'].contains('today')) {
+                          fontColor = Colors.blue;
+                        } else {
+                          fontColor = Colors.white;
+                        }
+                      }
+
+                      if (day['holiday'].isNotEmpty) {
+                        if (!day['bookingStatus'].contains('today')) {
+                          backgroundColor = colorScheme['secondaryLight']!;
+                          fontStyle = FontStyle.italic;
+                          fontSize = 20;
+                          fontWeight = FontWeight.normal;
+                          toolTip = day['holiday'];
+                        }
                       }
                     }
-
-                    if (day['bookingStatus'].contains('requested')) {
-                      backgroundColor = colorScheme['primaryLight']!;
-
-                      if (day['bookingStatus'].contains('today')) {
-                        fontColor = Colors.blue;
-                      } else {
-                        fontColor = Colors.white;
-                      }
-                    }
-
-                    if (day['holiday'].isNotEmpty) {
-                      if (!day['bookingStatus'].contains('today')) {
-                        backgroundColor = colorScheme['secondaryLight']!;
-                        fontStyle = FontStyle.italic;
-                        fontSize = 14;
-                        fontWeight = FontWeight.normal;
-                        dayText += '\n${day["holiday"]}';
-                      }
-                    }
-
                     if (DateTime.parse(day['date']).month != month.month) {
                       backgroundColor =
                           const Color.fromARGB(255, 224, 224, 224);
@@ -159,21 +173,23 @@ class MonthCalendar extends StatelessWidget {
                     }
 
                     weekDays.last.children.add(Container(
-                      padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
-                      alignment: Alignment.centerRight,
-                      margin: const EdgeInsets.all(1),
-                      height: settings['dayBoxHeight'],
-                      width: settings['dayBoxWidth'],
-                      color: backgroundColor,
-                      child: Text(dayText,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                              fontFamily: 'Arvo',
-                              fontWeight: fontWeight,
-                              fontStyle: fontStyle,
-                              fontSize: 20,
-                              color: fontColor)),
-                    ));
+                        padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
+                        alignment: Alignment.centerRight,
+                        margin: const EdgeInsets.all(1),
+                        height: settings['dayBoxHeight'],
+                        width: settings['dayBoxWidth'],
+                        color: backgroundColor,
+                        child: Tooltip(
+                          message: toolTip,
+                          child: Text(dayText,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontFamily: 'Arvo',
+                                  fontWeight: fontWeight,
+                                  fontStyle: fontStyle,
+                                  fontSize: fontSize,
+                                  color: fontColor)),
+                        )));
                   }
                 }
                 return Column(

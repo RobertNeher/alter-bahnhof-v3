@@ -99,7 +99,7 @@ class BookingsApi {
         holidayName = isHoliday(holidays, indexDay);
 
         weekRow.add({
-          'bookingID': status != null ? status.id : '',
+          'booking': status != null ? status.toJson() : {},
           'date': indexDay,
           'weekDay': getWeekday(indexDay),
           'bookingStatus': dayCategories,

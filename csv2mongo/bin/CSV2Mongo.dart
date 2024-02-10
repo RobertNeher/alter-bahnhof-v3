@@ -158,7 +158,7 @@ void main(List<String> args) async {
       json = {
         // '_id': ObjectId(),
         'requestedOn': requestDate,
-        'confirmedOn': null,
+        'confirmedOn': '',
         'startDate': startDate,
         'endDate': endDate,
         'lastName': lastName,
@@ -171,7 +171,6 @@ void main(List<String> args) async {
         'country': element[13],
         'status': colStatus,
         'quoteNo': '',
-        'quoteConfirmedOn': null,
         'invoiceNo': '',
         'eventType': type,
         'comment': element[7],
