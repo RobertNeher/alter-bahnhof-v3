@@ -13,6 +13,7 @@ class MonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        width: 400,
         color: const Color.fromARGB(255, 237, 237, 237),
         child: FutureBuilder<Map<String, dynamic>>(
             future: getCalendarBasics(month),
@@ -137,12 +138,11 @@ class MonthCalendar extends StatelessWidget {
                         } else {
                           fontColor = Colors.white;
                         }
-                        String id = day['bookingID']
-                            .substring(10, day['bookingID'].length - 2);
-                        fetchBookingDetail(id: id)!.then((value) {
-                          toolTip =
-                              '${value["lastName"]}, ${value["firstName"]}\nAngefragt am: ${value["requestedOn"]}\nBestätigt am ${value["confirmedOn"]}\nBemerkung: ${value["comment"]}';
-                        });
+
+                        toolTip = '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
+                            'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
+                            'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
+                            'Bemerkung: ${day["booking"]["comment"]}';
                       }
 
                       if (day['bookingStatus'].contains('requested')) {
@@ -153,6 +153,10 @@ class MonthCalendar extends StatelessWidget {
                         } else {
                           fontColor = Colors.white;
                         }
+                        toolTip = '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
+                            'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
+                            'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
+                            'Bemerkung: ${day["booking"]["comment"]}';
                       }
 
                       if (day['holiday'].isNotEmpty) {
@@ -193,29 +197,31 @@ class MonthCalendar extends StatelessWidget {
                   }
                 }
                 return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        constraints: const BoxConstraints(maxWidth: 200),
-                        padding: const EdgeInsets.all(5),
-                        margin: const EdgeInsets.only(bottom: 3),
-                        height: 40,
-                        // width: 150,
-                        color: Colors.black38,
+                        // alignment: Alignment.topLeft,
+                        // constraints: const BoxConstraints(maxWidth: 400),
+                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        // margin: const EdgeInsets.all(1),
+                        height: 45,
+                        width: 200,
+                        color: colorScheme['secondary'],
                         child: Text(snapshot.data!['month'],
                             textAlign: TextAlign.left,
                             style: const TextStyle(
                                 fontFamily: 'Arvo',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
-                                color: Colors.white)),
-                      ),
-                      Row(
+                                color: Colors.white))),
+                    SizedBox(
+                        width: 300,
+                        child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: weekDays,
-                      ),
-                    ]);
+                        )),
+                  ],
+                );
               } else {
                 return const Center(
                     child: Text('Something went wrong!',

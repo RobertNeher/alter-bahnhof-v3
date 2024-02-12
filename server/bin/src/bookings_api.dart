@@ -151,16 +151,17 @@ class BookingsApi {
           booking['blockedDay'] = (df.format(booking['startDate']));
           blockedDays.add({
             'id': booking['_id'].toString(),
-            'requestedOn': booking['requestedOn'].toUtc(),
-            'confirmedOn': booking['confirmedOn'] != null
-                ? booking['confirmedOn'].toUtc()
-                : null,
+            'requestedOn': booking['requestedOn'],
+            'confirmedOn': booking['confirmedOn'],
             'lastName': booking['lastName'],
             'firstName': booking['firstName'],
-            'startDate': booking['startDate'].toUtc(),
-            'endDate': booking['startDate'].toUtc(),
+            'phone': booking['phone'],
+            'email': booking['email'],
+            'startDate': booking['startDate'],
+            'endDate': booking['startDate'],
             'eventType': booking['eventType'],
             'status': booking['status'],
+            'comment': booking['comment'],
             'guestCount': booking['guestCount'],
           });
         }
@@ -171,16 +172,17 @@ class BookingsApi {
           do {
             blockedDays.add({
               'id': booking['_id'].toString(),
-              'requestedOn': booking['requestedOn'].toUtc(),
-              'confirmedOn': booking['confirmedOn'] != null
-                  ? booking['confirmedOn'].toUtc()
-                  : null,
+              'requestedOn': booking['requestedOn'],
+              'confirmedOn': booking['confirmedOn'],
               'lastName': booking['lastName'],
               'firstName': booking['firstName'],
-              'startDate': indexDay.toUtc(),
-              'endDate': indexDay.toUtc(),
+              'phone': booking['phone'],
+              'email': booking['email'],
+              'startDate': booking['startDate'],
+              'endDate': booking['startDate'],
               'eventType': booking['eventType'],
               'status': booking['status'],
+              'comment': booking['comment'],
               'guestCount': booking['guestCount'],
             });
             indexDay = indexDay.add(Duration(days: 1));
