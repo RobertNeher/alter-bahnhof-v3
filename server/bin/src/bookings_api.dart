@@ -50,6 +50,7 @@ class BookingsApi {
           int.parse(parameters['month'].substring(0, 4)),
           int.parse(parameters['month'].substring(5, 7)),
           1);
+
       // Normalize month's begin to Monday of previous month
       lastDay = DateTime(requestedMonth.year, requestedMonth.month, 0);
       firstDay = lastDay.weekday < 7
@@ -123,6 +124,7 @@ class BookingsApi {
 
     //.../blockedDays?from=yyyy-MM-dd&to=yyyy-MM-dd
     router.get('/blockedDays', (Request request) async {
+      bool managementView = false;
       String start, end;
       DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
       List<Map<String, dynamic>> blockedDays = [];
@@ -131,6 +133,12 @@ class BookingsApi {
       // Default date: Starting month/year of Seminarhaus
       start = parameters['from'] ?? settings['alterBahnhofStartDate'];
       end = parameters['to'] ?? df.format(DateTime.now());
+
+      if (parameters['managementView'] != null) {
+        managementView = parameters['managementView'] == 'y';
+      } else {
+        managementView = false;
+      }
 
       await bookingsCollection
           .find(where
@@ -153,15 +161,15 @@ class BookingsApi {
             'id': booking['_id'].toString(),
             'requestedOn': booking['requestedOn'],
             'confirmedOn': booking['confirmedOn'],
-            'lastName': booking['lastName'],
-            'firstName': booking['firstName'],
-            'phone': booking['phone'],
-            'email': booking['email'],
+            'lastName': managementView ? booking['lastName'] : '',
+            'firstName': managementView ? booking['firstName'] : '',
+            'phone': managementView ? booking['phone'] : '',
+            'email': managementView ? booking['email'] : '',
             'startDate': booking['startDate'],
             'endDate': booking['startDate'],
             'eventType': booking['eventType'],
             'status': booking['status'],
-            'comment': booking['comment'],
+            'comment': managementView ? booking['comment'] : '',
             'guestCount': booking['guestCount'],
           });
         }
@@ -174,15 +182,15 @@ class BookingsApi {
               'id': booking['_id'].toString(),
               'requestedOn': booking['requestedOn'],
               'confirmedOn': booking['confirmedOn'],
-              'lastName': booking['lastName'],
-              'firstName': booking['firstName'],
-              'phone': booking['phone'],
-              'email': booking['email'],
+              'lastName': managementView ? booking['lastName'] : '',
+              'firstName': managementView ? booking['firstName'] : '',
+              'phone': managementView ? booking['phone'] : '',
+              'email': managementView ? booking['email'] : '',
               'startDate': booking['startDate'],
               'endDate': booking['startDate'],
               'eventType': booking['eventType'],
               'status': booking['status'],
-              'comment': booking['comment'],
+              'comment': managementView ? booking['comment'] : '',
               'guestCount': booking['guestCount'],
             });
             indexDay = indexDay.add(Duration(days: 1));

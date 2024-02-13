@@ -7,8 +7,10 @@ import 'package:model/calendar.dart';
 import 'package:utils/utils.dart';
 
 class MonthCalendar extends StatelessWidget {
-  DateTime month = DateTime.now();
-  MonthCalendar({super.key, required this.month});
+  final DateTime month;
+  final bool managementView;
+  const MonthCalendar(
+      {super.key, required this.month, required this.managementView});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class MonthCalendar extends StatelessWidget {
         width: 400,
         color: const Color.fromARGB(255, 237, 237, 237),
         child: FutureBuilder<Map<String, dynamic>>(
-            future: getCalendarBasics(month),
+            future: getCalendarBasics(month, managementView),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -138,11 +140,12 @@ class MonthCalendar extends StatelessWidget {
                         } else {
                           fontColor = Colors.white;
                         }
-
-                        toolTip = '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
+                        toolTip = managementView
+                            ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
                             'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
                             'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
-                            'Bemerkung: ${day["booking"]["comment"]}';
+                                'Bemerkung: ${day["booking"]["comment"]}'
+                            : '';
                       }
 
                       if (day['bookingStatus'].contains('requested')) {
@@ -153,10 +156,12 @@ class MonthCalendar extends StatelessWidget {
                         } else {
                           fontColor = Colors.white;
                         }
-                        toolTip = '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
+                        toolTip = managementView
+                            ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
                             'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
                             'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
-                            'Bemerkung: ${day["booking"]["comment"]}';
+                                'Bemerkung: ${day["booking"]["comment"]}'
+                            : '';
                       }
 
                       if (day['holiday'].isNotEmpty) {

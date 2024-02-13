@@ -13,12 +13,19 @@ class AlterBahnhofApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
-            body: GridView.count(
-                crossAxisCount: 3,
-                children: List.generate(
-                    1,
-                    (index) => MonthCalendar(
-                        month: DateTime(
-                            2024, DateTime.now().month + index, 1))))));
+            body: MonthCalendar(
+          month: DateTime(2024, 2, 1),
+          managementView: false,
+        )));
+
+    // GridView.count(
+    //     crossAxisCount: 3,
+    //     children: List.generate(
+    //         1,
+    //         (index) => MonthCalendar(
+    //             month: DateTime(
+    //                 2024, DateTime.now().month + index, 1),
+    //               managementView: false,
+    //             )))));
   }
 }

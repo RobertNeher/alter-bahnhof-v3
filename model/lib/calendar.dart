@@ -4,12 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:settings/settings.dart';
 
-Future<Map<String, dynamic>> getCalendarBasics(DateTime month) async {
+Future<Map<String, dynamic>> getCalendarBasics(
+    DateTime month, bool managementView) async {
   http.Response response;
   // Getting event bookings first
   Uri uri = Uri.http(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
       '/bookings/daysOfMonth', {
+    'managementView': managementView ? 'y' : 'n',
     'month': DateFormat(settings['alterBahnhofDateFormat']).format(month),
   });
 
