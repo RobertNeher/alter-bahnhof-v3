@@ -11,7 +11,6 @@ Future<Map<String, dynamic>> getCalendarBasics(
   Uri uri = Uri.http(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
       '/bookings/daysOfMonth', {
-    'managementView': managementView ? 'y' : 'n',
     'month': DateFormat(settings['alterBahnhofDateFormat']).format(month),
   });
 
