@@ -2,14 +2,14 @@ name: csv2mongo
 description: A CLI to process exported data from CalendarApp
 version: 1.0.0
 publish_to: 'none'
-# repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.2.5
 
-# Add regular dependencies here.
 dependencies:
   csv:
+  initialize_db:
+    path: '../initialize_db'
   intl:
   mongo_dart:
   settings:

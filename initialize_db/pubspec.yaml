@@ -1,0 +1,16 @@
+name: initialize_db
+description: Initialization of clean  data base for inital setup
+version: 0.0.1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.2.5
+
+dependencies:
+  intl:
+  mongo_dart:
+  settings:
+    path: '../settings'
+
+dev_dependencies:
+  lints:

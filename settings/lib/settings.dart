@@ -12,6 +12,7 @@ Map<String, dynamic> settings = {
   'usersCollection': 'Users',
   'eventTypeCollection': 'EventTypes',
   'bookingStatusCollection': 'BookingStatus',
+  'reservedDaysCollection': 'ReservedDays',
   'alterBahnhofStartDate': '2017-09-01',
   'bookingYearSpan': 3, //years from today
   'weekDays': ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],

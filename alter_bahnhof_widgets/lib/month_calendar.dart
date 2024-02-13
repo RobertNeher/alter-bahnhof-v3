@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:model/booking.dart';
+// import 'package:model/booking.dart';
 import 'package:settings/settings.dart';
 import 'package:settings/color_scheme.dart';
 import 'package:settings/text_styles.dart';
