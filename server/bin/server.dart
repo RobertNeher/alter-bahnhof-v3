@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
@@ -33,6 +35,20 @@ Future main() async {
     );
   });
 
+  SecurityContext getSecurityContext() {
+    // Bind with a secure HTTPS connection
+    final chain = Platform.script
+        .resolve('${settings['certicatePath']}/AlterBahnhofCert.pem')
+        .toFilePath();
+    final key = Platform.script
+        .resolve('${settings['certicatePath']}/AlterBahnhofKey.pem')
+        .toFilePath();
+
+    return SecurityContext()
+      ..useCertificateChain(chain)
+      ..usePrivateKey(key, password: settings['alterBahnhofEncryptionKey']);
+  }
+
   Db db = Db('${settings["mongoDBServerURI"]}/${settings["mongoDatabase"]}');
   await db.open();
   DbCollection bookings = db.collection(settings["bookingsCollection"]);
@@ -52,8 +68,11 @@ Future main() async {
       (Request request) => Response.ok(
           'This is the REST service of Alter Bahnhof (endpoint unknown)'));
 
+  // final server = await HttpServer.bindSecure(InternetAddress.anyIPv4,
+  //     settings['alterBahnhofPort'], getSecurityContext());
   final server = await io.serve(
       alterBahnhof, settings['alterBahnhofHost'], settings['alterBahnhofPort']);
+
   print(
       'Server listening on ${settings['alterBahnhofHost']}:${settings['alterBahnhofPort']}');
 }
