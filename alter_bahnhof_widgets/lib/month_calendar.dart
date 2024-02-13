@@ -15,8 +15,8 @@ class MonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 400,
-        color: const Color.fromARGB(255, 237, 237, 237),
+        width: 500,
+        // color: const Color.fromARGB(255, 237, 237, 237),
         child: FutureBuilder<Map<String, dynamic>>(
             future: getCalendarBasics(month, managementView),
             builder: (context, snapshot) {
@@ -220,7 +220,7 @@ class MonthCalendar extends StatelessWidget {
                                 fontSize: 24,
                                 color: Colors.white))),
                     SizedBox(
-                        width: 300,
+                        // width: 300,
                         child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: weekDays,
