@@ -1,5 +1,5 @@
 Map<String, dynamic> settings = {
-  'mongoDBServerURI': 'mongodb://localhost:21463',
+  'mongoDBServerURI': 'mongodb://localhost:21463', // currently in container
   'mongoDatabase': 'AlterBahnhof',
   'alterBahnhofHost': 'localhost',
   'alterBahnhofPort': 13762,
