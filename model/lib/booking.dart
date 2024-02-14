@@ -4,10 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:settings/settings.dart';
 
+// const default_date = DateFormat(settings['alterBahnhofDateFormat'])
+//     .parse(settings['alterBahnhofStartDate']);
+
 class Booking {
   String id = '';
   late DateTime requestedOn;
-  String confirmedOn = '';
+  DateTime? confirmedOn;
   late DateTime startDate;
   late DateTime endDate;
   String lastName = '';
@@ -30,7 +33,7 @@ class Booking {
   Booking({
     String id = '',
     DateTime? requestedOn,
-    String confirmedOn = '',
+    DateTime? confirmedOn,
     DateTime? startDate,
     DateTime? endDate,
     String lastName = '',
@@ -77,7 +80,10 @@ class Booking {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
     id = json['id'].toString();
     requestedOn = df.parse(json['requestedOn']);
-    confirmedOn = json['confirmedOn'];
+
+    if (confirmedOn != null) {
+      json['confirmedOn'] = df.parse(json['confirmedOn']);
+    }
     startDate = df.parse(json['startDate']);
     endDate = df.parse(json['endDate']);
     lastName = json['lastName'].toString();
