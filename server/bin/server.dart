@@ -35,19 +35,19 @@ Future main() async {
     );
   });
 
-  SecurityContext getSecurityContext() {
-    // Bind with a secure HTTPS connection
-    final chain = Platform.script
-        .resolve('${settings['certicatePath']}/AlterBahnhofCert.pem')
-        .toFilePath();
-    final key = Platform.script
-        .resolve('${settings['certicatePath']}/AlterBahnhofKey.pem')
-        .toFilePath();
+  // SecurityContext getSecurityContext() {
+  //   // Bind with a secure HTTPS connection
+  //   final chain = Platform.script
+  //       .resolve('${settings['certicatePath']}/AlterBahnhofCert.pem')
+  //       .toFilePath();
+  //   final key = Platform.script
+  //       .resolve('${settings['certicatePath']}/AlterBahnhofKey.pem')
+  //       .toFilePath();
 
-    return SecurityContext()
-      ..useCertificateChain(chain)
-      ..usePrivateKey(key, password: settings['alterBahnhofEncryptionKey']);
-  }
+  //   return SecurityContext()
+  //     ..useCertificateChain(chain)
+  //     ..usePrivateKey(key, password: settings['alterBahnhofEncryptionKey']);
+  // }
 
   Db db = Db('${settings["mongoDBServerURI"]}/${settings["mongoDatabase"]}');
   await db.open();
