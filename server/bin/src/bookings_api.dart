@@ -50,6 +50,8 @@ class BookingsApi {
           int.parse(parameters['month'].substring(0, 4)),
           int.parse(parameters['month'].substring(5, 7)),
           1);
+      bool managementView =
+          (parameters['managementView'].toUpperCase().substring(0, 1)) == 'Y';
 
       // Normalize month's begin to Monday of previous month
       lastDay = DateTime(requestedMonth.year, requestedMonth.month, 0);
@@ -65,7 +67,9 @@ class BookingsApi {
       List<Booking> bookings = await fetchBlockedDays(
           startDate: df.format(requestedMonth),
           endDate: df.format(
-              DateTime(requestedMonth.year, requestedMonth.month + 1, 0)));
+            DateTime(requestedMonth.year, requestedMonth.month + 1, 0),
+          ),
+          managementView: managementView);
 
       List<String> dayCategories = [];
       String holidayName = '';
@@ -122,7 +126,7 @@ class BookingsApi {
           headers: responseHeaders);
     });
 
-    //.../blockedDays?from=yyyy-MM-dd&to=yyyy-MM-dd
+    //.../blockedDays?from=yyyy-MM-dd&to=yyyy-MM-dd[&managementView=y/n]
     router.get('/blockedDays', (Request request) async {
       bool managementView = false;
       String start, end;
@@ -135,7 +139,8 @@ class BookingsApi {
       end = parameters['to'] ?? df.format(DateTime.now());
 
       if (parameters['managementView'] != null) {
-        managementView = parameters['managementView'] == 'y';
+        managementView =
+            parameters['managementView'].toUpperCase().substring(0, 1) == 'Y';
       } else {
         managementView = false;
       }
