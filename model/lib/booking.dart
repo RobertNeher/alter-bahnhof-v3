@@ -78,7 +78,9 @@ class Booking {
 
   Booking.fromJson(Map<String, dynamic> json) {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
-    id = json['id'].toString();
+    String id = json['id'].substring(10); // Extracting the id
+    id = id.substring(0, id.length - 2);
+
     requestedOn = df.parse(json['requestedOn']);
 
     if (confirmedOn != null) {
@@ -175,7 +177,7 @@ Future<Map<String, dynamic>>? fetchBookingDetail({String? id}) async {
 }
 
 Future<List<Booking>> fetchBlockedDays(
-    {String? startDate, String? endDate}) async {
+    {String? startDate, String? endDate, bool managementView = false}) async {
   List<Booking> blockedDays = <Booking>[];
   http.Response response;
 
@@ -184,8 +186,11 @@ Future<List<Booking>> fetchBlockedDays(
   //  Getting event bookings first
   Uri uri = Uri.http(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
-      '/bookings/blockedDays',
-      {'from': startDate, 'to': endDate});
+      '/bookings/blockedDays', {
+    'from': startDate,
+    'to': endDate,
+    'managementView': managementView ? 'y' : 'n'
+  });
 
   response = await http
       .get(uri, headers: {HttpHeaders.acceptHeader: 'application/json'});
