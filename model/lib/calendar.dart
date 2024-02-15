@@ -12,6 +12,7 @@ Future<Map<String, dynamic>> getCalendarBasics(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
       '/bookings/daysOfMonth', {
     'month': DateFormat(settings['alterBahnhofDateFormat']).format(month),
+    'managementView': managementView
   });
 
   response = await http

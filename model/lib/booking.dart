@@ -4,10 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:settings/settings.dart';
 
+// const default_date = DateFormat(settings['alterBahnhofDateFormat'])
+//     .parse(settings['alterBahnhofStartDate']);
+
 class Booking {
   String id = '';
   late DateTime requestedOn;
-  String confirmedOn = '';
+  DateTime? confirmedOn;
   late DateTime startDate;
   late DateTime endDate;
   String lastName = '';
@@ -30,7 +33,7 @@ class Booking {
   Booking({
     String id = '',
     DateTime? requestedOn,
-    String confirmedOn = '',
+    DateTime? confirmedOn,
     DateTime? startDate,
     DateTime? endDate,
     String lastName = '',
@@ -75,9 +78,14 @@ class Booking {
 
   Booking.fromJson(Map<String, dynamic> json) {
     DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
-    id = json['id'].toString();
+    String id = json['id'].substring(10); // Extracting the id
+    id = id.substring(0, id.length - 2);
+
     requestedOn = df.parse(json['requestedOn']);
-    confirmedOn = json['confirmedOn'];
+
+    if (confirmedOn != null) {
+      json['confirmedOn'] = df.parse(json['confirmedOn']);
+    }
     startDate = df.parse(json['startDate']);
     endDate = df.parse(json['endDate']);
     lastName = json['lastName'].toString();
@@ -169,7 +177,7 @@ Future<Map<String, dynamic>>? fetchBookingDetail({String? id}) async {
 }
 
 Future<List<Booking>> fetchBlockedDays(
-    {String? startDate, String? endDate}) async {
+    {String? startDate, String? endDate, bool managementView = false}) async {
   List<Booking> blockedDays = <Booking>[];
   http.Response response;
 
@@ -178,8 +186,11 @@ Future<List<Booking>> fetchBlockedDays(
   //  Getting event bookings first
   Uri uri = Uri.http(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
-      '/bookings/blockedDays',
-      {'from': startDate, 'to': endDate});
+      '/bookings/blockedDays', {
+    'from': startDate,
+    'to': endDate,
+    'managementView': managementView ? 'y' : 'n'
+  });
 
   response = await http
       .get(uri, headers: {HttpHeaders.acceptHeader: 'application/json'});

@@ -22,7 +22,7 @@ void main(List<String> args) async {
   }
   Db db = Db('${settings["mongoDBServerURI"]}/${settings["mongoDatabase"]}');
   await db.open();
-  DbCollection bookings = db.collection(settings['bookingStatusCollection']);
+  DbCollection bookings = db.collection(settings['bookingsCollection']);
   print('Collection ${bookings.fullName()} neu erstellt.');
 
   Stream<List> inputStream = file.openRead();
