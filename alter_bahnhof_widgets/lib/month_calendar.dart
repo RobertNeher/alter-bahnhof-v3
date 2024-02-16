@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 // import 'package:model/booking.dart';
 import 'package:settings/settings.dart';
 import 'package:settings/color_scheme.dart';
@@ -27,6 +28,8 @@ class MonthCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
+
     return Container(
         child: FutureBuilder<Map<String, dynamic>>(
             future: getCalendarBasics(month, managementView),
@@ -150,10 +153,17 @@ class MonthCalendar extends StatelessWidget {
                           fontColor = Colors.white;
                         }
                         toolTip = managementView
-                            ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
-                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
-                                'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
-                                'Bemerkung: ${day["booking"]["comment"]}'
+                            ? '${day["booking"]["firstName"]} ${day["booking"]["lastName"]}\n' +
+                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/${day["booking"]["email"] ??= ''}\n' +
+                                'Angefragt am: ${DateFormat('dd. MMMM yyyy').format(DateTime.parse(day["booking"]["requestedOn"]))}\n' +
+                                'Bestätigt am: ' +
+                                (day["booking"]["confirmedOn"] != null
+                                    ? dateFormatyyyy_MM_dd2ddMMMMyyyy(
+                                        day["booking"]["confirmedOn"])
+                                    : "unbestätigt") +
+                                '\n' +
+                                'Bemerkung:\n' +
+                                day["booking"]["comment"]
                             : '';
                       }
 
@@ -161,10 +171,11 @@ class MonthCalendar extends StatelessWidget {
                         backgroundColor = colorScheme['primaryLight']!;
 
                         toolTip = managementView
-                            ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
-                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
-                                'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
-                                'Bemerkung: ${day["booking"]["comment"]}'
+                            ? '${day["booking"]["firstName"]} ${day["booking"]["lastName"]}\n' +
+                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/${day["booking"]["email"] ??= ''}\n' +
+                                'Angefragt am: ${DateFormat('dd. MMMM yyyy').format(DateTime.parse(day["booking"]["requestedOn"]))}\n' +
+                                'Bemerkung:\n' +
+                                day["booking"]["comment"]
                             : '';
                       }
 

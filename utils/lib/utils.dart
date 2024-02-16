@@ -35,6 +35,12 @@ bool isSameDay(DateTime date, DateTime compare) {
       date.day == compare.day);
 }
 
+String dateFormatyyyy_MM_dd2ddMMMMyyyy(String sourceDate) {
+  DateFormat df = DateFormat('yyyy-MM-dd');
+
+  return DateFormat('dd. MMMM yyyy').format(df.parse(sourceDate));
+}
+
 String getWeekday(DateTime date) {
   // TODO: Add locale!
   String weekday = DateFormat('E').format(date).substring(0, 2);
