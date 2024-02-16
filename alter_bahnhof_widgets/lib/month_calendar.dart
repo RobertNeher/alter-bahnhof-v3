@@ -6,6 +6,19 @@ import 'package:settings/text_styles.dart';
 import 'package:model/calendar.dart';
 import 'package:utils/utils.dart';
 
+/**** Best use of this widget ****
+GridView.count(
+          childAspectRatio: 1.8,
+          crossAxisCount: 3,
+          children: List.generate(
+              12,
+              (index) => MonthCalendar(
+                    month: DateTime(2024, 1 + index, 1),
+                    managementView: true,
+                  )),
+          shrinkWrap: true,
+        )
+***********************************/
 class MonthCalendar extends StatelessWidget {
   final DateTime month;
   final bool managementView;
@@ -15,8 +28,6 @@ class MonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 500,
-        // color: const Color.fromARGB(255, 237, 237, 237),
         child: FutureBuilder<Map<String, dynamic>>(
             future: getCalendarBasics(month, managementView),
             builder: (context, snapshot) {
@@ -39,8 +50,6 @@ class MonthCalendar extends StatelessWidget {
                   children: <Widget>[],
                 );
                 //    header weekNo
-                // TextStyle weekNoStyle = textStyles['calendarHeader']!;
-                // weekNoStyle.fontStyle = FontStyle.italic;
                 weekNo.children.add(Container(
                     constraints:
                         BoxConstraints(maxWidth: settings['dayBoxWidth']),
@@ -142,8 +151,8 @@ class MonthCalendar extends StatelessWidget {
                         }
                         toolTip = managementView
                             ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
-                            'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
-                            'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
+                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
+                                'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
                                 'Bemerkung: ${day["booking"]["comment"]}'
                             : '';
                       }
@@ -158,8 +167,8 @@ class MonthCalendar extends StatelessWidget {
                         }
                         toolTip = managementView
                             ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
-                            'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
-                            'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
+                                'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
+                                'Angefragt am: ${day["booking"]["requestedOn"]}\nBestätigt am ${day["booking"]["confirmedOn"]}\n' +
                                 'Bemerkung: ${day["booking"]["comment"]}'
                             : '';
                       }
@@ -203,35 +212,31 @@ class MonthCalendar extends StatelessWidget {
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        // alignment: Alignment.topLeft,
-                        // constraints: const BoxConstraints(maxWidth: 400),
+                  children: [
+                    Container(
                         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        // margin: const EdgeInsets.all(1),
-                        height: 45,
+                        height: 35,
                         width: 200,
                         color: colorScheme['secondary'],
                         child: Text(snapshot.data!['month'],
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                                 fontFamily: 'Arvo',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 24,
                                 color: Colors.white))),
                     SizedBox(
-                        // width: 300,
                         child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: weekDays,
-                        )),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: weekDays,
+                    )),
                   ],
                 );
               } else {
                 return const Center(
                     child: Text('Something went wrong!',
                         style: TextStyle(
-                            // fontFamily: 'Railway',
+                            fontFamily: 'Arvo',
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
                             color: Colors.red)));
