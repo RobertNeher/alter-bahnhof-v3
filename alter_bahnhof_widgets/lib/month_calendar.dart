@@ -160,11 +160,6 @@ class MonthCalendar extends StatelessWidget {
                       if (day['bookingStatus'].contains('requested')) {
                         backgroundColor = colorScheme['primaryLight']!;
 
-                        if (day['bookingStatus'].contains('today')) {
-                          fontColor = Colors.blue;
-                        } else {
-                          fontColor = Colors.white;
-                        }
                         toolTip = managementView
                             ? '${day["booking"]["lastName"]}, ${day["booking"]["firstName"]}\n' +
                                 'Kontaktdaten (Mobil/E-Mail): ${day["booking"]["phone"]}/ ${day["booking"]["email"] ??= ''}\n' +
@@ -188,6 +183,12 @@ class MonthCalendar extends StatelessWidget {
                           const Color.fromARGB(255, 224, 224, 224);
                       fontColor = colorScheme['grey']!;
                       fontStyle = FontStyle.italic;
+                    }
+
+                    if (day['bookingStatus'].contains('today')) {
+                      fontColor = Colors.blue;
+                      toolTip = 'Heute' +
+                          (toolTip.isNotEmpty ? '\n\n' + toolTip : '');
                     }
 
                     weekDays.last.children.add(Container(
