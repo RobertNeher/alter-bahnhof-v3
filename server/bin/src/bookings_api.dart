@@ -50,8 +50,9 @@ class BookingsApi {
           int.parse(parameters['month'].substring(0, 4)),
           int.parse(parameters['month'].substring(5, 7)),
           1);
-      bool managementView =
-          (parameters['managementView'].toUpperCase().substring(0, 1)) == 'Y';
+      bool managementView = parameters['managementView'] != null
+          ? (parameters['managementView'].toUpperCase().substring(0, 1)) == 'Y'
+          : false;
 
       // Normalize month's begin to Monday of previous month
       lastDay = DateTime(requestedMonth.year, requestedMonth.month, 0);
