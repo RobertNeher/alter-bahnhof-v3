@@ -76,7 +76,5 @@ String decryptString(text) {
   final encrypted = encrypter.encrypt(text, iv: iv);
   final decrypted = encrypter.decrypt(encrypted, iv: iv);
 
-  print(decrypted);
-
   return (decrypted);
 }

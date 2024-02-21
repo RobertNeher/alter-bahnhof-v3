@@ -35,18 +35,20 @@ class ReservedDay {
 }
 
 Future<List<ReservedDay>> fetchReservedDays(
-    String from, String to, bool managementView) async {
+    {String startDate = '',
+    String endDate = '',
+    bool managementView = false}) async {
   List<ReservedDay> reservedDays = [];
-  String params = '';
-
-  params += from.isEmpty ? '' : 'from=$from';
-  params += to.isEmpty ? '' : 'to=$to';
-  params +=
-      managementView ? '' : 'managementView=${managementView ? "Y" : "N"}';
+  Map<String, dynamic> params = {
+    'startDate': startDate,
+    'endDate': endDate,
+    'managementView': managementView ? 'Y' : 'N',
+  };
 
   Uri uri = Uri.http(
       '${settings['alterBahnhofHost']}:${settings['alterBahnhofPort']}',
-      'reservedDays/all');
+      'reservedDays/all',
+      params);
   http.Response response = await http.get(uri);
 
   if (response.statusCode == 200) {

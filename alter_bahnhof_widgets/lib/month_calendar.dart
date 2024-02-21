@@ -1,30 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:model/booking.dart';
 import 'package:settings/settings.dart';
 import 'package:settings/color_scheme.dart';
 import 'package:settings/text_styles.dart';
 import 'package:model/calendar.dart';
 import 'package:utils/utils.dart';
 
-/**** Best use of this widget ****
-GridView.count(
-          childAspectRatio: 1.8,
-          crossAxisCount: 3,
-          children: List.generate(
-              12,
-              (index) => MonthCalendar(
-                    month: DateTime(2024, 1 + index, 1),
-                    managementView: true,
-                  )),
-          shrinkWrap: true,
-        )
-***********************************/
 class MonthCalendar extends StatelessWidget {
   final DateTime month;
   final bool managementView;
+  final VoidCallback? callback;
   const MonthCalendar(
-      {super.key, required this.month, required this.managementView});
+      {super.key,
+      required this.month,
+      required this.managementView,
+      this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +102,7 @@ class MonthCalendar extends StatelessWidget {
                   //  header      secondary   white      bold   KW: Kalenderwoche, weekday name
                   //  normal day  white       grey       normal -
                   //  today       white       blue       normal -
+                  //  reserved    lightRed    grey       normal 'Reserved'
                   //  holiday     lightGrey   black      normal Name of holiday
                   //  booked      green       white      normal Name (requestedOn/confirmedOn): type \n comment
                   //  requested   lightGreen  white      normal Name (requestedOn): type \n comment
@@ -202,6 +193,12 @@ class MonthCalendar extends StatelessWidget {
                           (toolTip.isNotEmpty ? '\n\n' + toolTip : '');
                     }
 
+                    if (day['bookingStatus'].contains('reserved')) {
+                      fontColor = Colors.black;
+                      backgroundColor = colorScheme['redLight']!;
+                      toolTip = 'Reserviert';
+                    }
+
                     weekDays.last.children.add(Container(
                         padding: const EdgeInsets.fromLTRB(15, 0, 10, 0),
                         alignment: Alignment.centerRight,
@@ -210,16 +207,18 @@ class MonthCalendar extends StatelessWidget {
                         width: settings['dayBoxWidth'],
                         color: backgroundColor,
                         child: Tooltip(
-                          message: toolTip,
-                          child: Text(dayText,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                  fontFamily: 'Arvo',
-                                  fontWeight: fontWeight,
-                                  fontStyle: fontStyle,
-                                  fontSize: fontSize,
-                                  color: fontColor)),
-                        )));
+                            message: toolTip,
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 250),
+                              child: Text(dayText,
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      fontFamily: 'Arvo',
+                                      fontWeight: fontWeight,
+                                      fontStyle: fontStyle,
+                                      fontSize: fontSize,
+                                      color: fontColor)),
+                            ))));
                   }
                 }
                 return Column(

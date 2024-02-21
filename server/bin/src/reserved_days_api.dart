@@ -26,41 +26,25 @@ class ReservedDaysApi {
           headers: responseHeaders);
     });
 
-    router.get('/all', (Request request) async {
+    // .../check?yyyy-MM-dd&managementView=[Y|N]
+    router.get('/check', (Request request) async {
       DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
       Map<String, dynamic> parameters = request.url.queryParameters;
       bool managementView = false;
 
-      // Default date: Starting month/year of Seminarhaus
-      String start = parameters['from'] ?? settings['alterBahnhofStartDate'];
-      String end = parameters['to'] ?? df.format(DateTime.now());
-
-      if (parameters['managementView'] != null) {
+      if (parameters['managementView'] ==
+          null) if (parameters['managementView'] != null) {
         managementView =
             parameters['managementView'].toUpperCase().substring(0, 1) == 'Y';
       } else {
         managementView = false;
       }
-      List<Map<String, dynamic>> allDates = [];
-      await reservedDaysCollection
-          .find(where
-            ..gte('blockedDay',
-                DateFormat(settings['alterBahnhofDateFormat']).parse(start))
-            ..and(where.lte(
-                'blockedDay',
-                DateFormat(settings['alterBahnhofDateFormat'])
-                    .parse(end)
-                    .add(Duration(days: 1))))
-            ..sortBy('blockedDay', descending: false))
-          .forEach((day) {
-        allDates.add({
-          'id': day['_id'].toString(),
-          'blockedDay': day['blockedDay'].toString(),
-          'comment': managementView ? day['comment'] : '',
-        });
-      });
+      String day = parameters['day'];
 
-      return Response.ok(jsonEncode(allDates), headers: responseHeaders);
+      var result = await reservedDaysCollection.findOne(where
+        ..eq('blockedDay',
+            DateFormat(settings['alterBahnhofDateFormat']).parse(day)));
+      return Response.ok(jsonEncode(result), headers: responseHeaders);
     });
 
     router.get('/<something|.*>', (Request request, String something) async {

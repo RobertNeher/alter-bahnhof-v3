@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
+import 'package:model/reserved_days.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -64,13 +65,18 @@ class BookingsApi {
       // Normalize month's end to Sunday of subsequent month
       lastDay = DateTime(requestedMonth.year, requestedMonth.month + 1, 0);
       lastDay = lastDay.add(Duration(days: 7 - lastDay.weekday + 1));
+      //  List<Booking> bookings = await fetchBlockedDays(
+      //       startDate: df.format(requestedMonth),
+      //       endDate: df.format(
+      //         DateTime(requestedMonth.year, requestedMonth.month + 1, 0),
+      //       ),
+      //       managementView: managementView);
 
-      List<Booking> bookings = await fetchBlockedDays(
-          startDate: df.format(requestedMonth),
-          endDate: df.format(
-            DateTime(requestedMonth.year, requestedMonth.month + 1, 0),
-          ),
-          managementView: managementView);
+      // List<ReservedDay> reservedDays = await fetchReservedDays(
+      //     startDate: df.format(requestedMonth),
+      //     endDate: df.format(
+      //         DateTime(requestedMonth.year, requestedMonth.month + 1, 0)),
+      //     managementView: managementView);
 
       List<String> dayCategories = [];
       String holidayName = '';
@@ -88,7 +94,23 @@ class BookingsApi {
       do {
         dayCategories = [];
         holidayName = isHoliday(holidays, indexDay);
-        status = bookingStatus(bookings, indexDay);
+        // status = bookingStatus(bookings, indexDay);
+        List<Booking> bookings = await fetchBlockedDays(
+            startDate: df.format(indexDay),
+            endDate: df.format(indexDay),
+            managementView: managementView);
+        List<ReservedDay> reservedDays = await fetchReservedDays(
+            startDate: df.format(indexDay),
+            endDate: df.format(indexDay),
+            managementView: managementView);
+
+        if (bookings.isNotEmpty) {
+          status = bookings[0];
+        }
+
+        if (reservedDays.isNotEmpty) {
+          dayCategories.add('reserved');
+        }
 
         if (status != null) {
           if (status.status == 'booked') {
@@ -334,20 +356,20 @@ String isHoliday(List<Map<String, dynamic>> holidaysOfMonth, DateTime date) {
   return '';
 }
 
-Booking? bookingStatus(List<Booking> bookings, DateTime date) {
-  for (Booking booking in bookings) {
-    //Normalization of dates
-    DateTime _endDate = DateTime(
-        booking.endDate.year, booking.endDate.month, booking.endDate.day);
-    DateTime _startDate = DateTime(
-        booking.startDate.year, booking.startDate.month, booking.startDate.day);
-    DateTime _date = DateTime(date.year, date.month, date.day);
+// Booking? bookingStatus(List<Booking> bookings, DateTime date) {
+//   for (Booking booking in bookings) {
+//     //Normalization of dates
+//     DateTime _endDate = DateTime(
+//         booking.endDate.year, booking.endDate.month, booking.endDate.day);
+//     DateTime _startDate = DateTime(
+//         booking.startDate.year, booking.startDate.month, booking.startDate.day);
+//     DateTime _date = DateTime(date.year, date.month, date.day);
 
-    if (_date.isAfter(_endDate) || _date.isBefore(_startDate)) {
-      continue;
-    } else {
-      return booking;
-    }
-  }
-  return null;
-}
+//     if (_date.isAfter(_endDate) || _date.isBefore(_startDate)) {
+//       continue;
+//     } else {
+//       return booking;
+//     }
+//   }
+//   return null;
+// }
