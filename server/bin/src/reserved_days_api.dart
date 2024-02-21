@@ -42,7 +42,6 @@ class ReservedDaysApi {
         managementView = false;
       }
       List<Map<String, dynamic>> allDates = [];
-
       await reservedDaysCollection
           .find(where
             ..gte('blockedDay',
