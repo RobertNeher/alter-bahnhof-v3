@@ -8,6 +8,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:settings/settings.dart';
 
 import 'src/bookings_api.dart';
+import 'src/reserved_days_api.dart';
 import 'src/users_api.dart';
 
 Future main() async {
@@ -49,13 +50,16 @@ Future main() async {
   //     ..usePrivateKey(key, password: settings['alterBahnhofEncryptionKey']);
   // }
 
-  Db db = Db('${settings["mongoDBServerURI"]}/${settings["mongoDatabase"]}');
+  Db db = Db('${settings['mongoDBServerURI']}/${settings['mongoDatabase']}');
   await db.open();
-  DbCollection bookings = db.collection(settings["bookingsCollection"]);
-  DbCollection users = db.collection(settings["usersCollection"]);
+  DbCollection bookings = db.collection(settings['bookingsCollection']);
+  DbCollection reservedDays = db.collection(settings['reservedDaysCollection']);
+  DbCollection users = db.collection(settings['usersCollection']);
 
   alterBahnhof.mount(
       '/bookings/', BookingsApi(bookingsCollection: bookings).router);
+  alterBahnhof.mount('/reservedDays/',
+      ReservedDaysApi(reservedDaysCollection: reservedDays).router);
   alterBahnhof.mount('/users/', UsersApi(usersCollection: users).router);
 
   final handler = const Pipeline()

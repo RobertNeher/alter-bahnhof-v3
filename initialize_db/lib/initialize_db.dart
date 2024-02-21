@@ -56,23 +56,23 @@ Future<bool> initializeAlterBahnhof() async {
 
     reservedDays = db.collection(settings['reservedDaysCollection']);
     reservedDays.insert(
-        {'blockedDay': DateTime.now(), 'note': 'Initialization performed.'});
+        {'blockedDay': DateTime.now(), 'comment': 'Initialization performed.'});
     print('Collection ${reservedDays.fullName()} neu erstellt.');
 
     DbCollection bookings = db.collection(settings['bookingsCollection']);
     await bookings.remove(null);
     print('Collection ${bookings.fullName()} gelöscht.\n');
 
-    bookings = db.collection(settings['bookingsCollection']);
-    bookings.createIndex(
-      keys: {'requestedOn': 1, 'eMail': 1, 'startDate': 1, 'lastName': 1},
-      unique: true,
-    );
-    bookings.createIndex(
-      keys: {'requestedOn': 1, 'startDate': 1, 'endDate': 1},
-      unique: true,
-    );
-    print('Indexe für Collection ${bookings.fullName()} neu erstellt.');
+    // bookings = db.collection(settings['bookingsCollection']);
+    // bookings.createIndex(
+    //   keys: {'requestedOn': 1, 'eMail': 1, 'startDate': 1, 'lastName': 1},
+    //   unique: true,
+    // );
+    // bookings.createIndex(
+    //   keys: {'requestedOn': 1, 'startDate': 1, 'endDate': 1},
+    //   unique: false,
+    // );
+    // print('Indexe für Collection ${bookings.fullName()} neu erstellt.');
 
     reservedDays.createIndex(
       keys: {'blockedDay': 1},

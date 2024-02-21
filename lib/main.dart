@@ -1,8 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:alter_bahnhof_widgets/month_calendar.dart';
+import 'package:flutter/material.dart';
+import 'package:alter_bahnhof_widgets/calendar_grid.dart';
 
 void main() {
   runApp(const AlterBahnhofApp());
+}
+
+VoidCallback? Function() onDayClicked() {
+  print("Click");
+  return () {};
 }
 
 class AlterBahnhofApp extends StatelessWidget {
@@ -12,17 +18,11 @@ class AlterBahnhofApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-            body: GridView.count(
-          childAspectRatio: 1.8,
-          crossAxisCount: 3,
-          children: List.generate(
-              12,
-              (index) => MonthCalendar(
-                    month: DateTime(2024, 1 + index, 1),
-                    managementView: true,
-                  )),
-          shrinkWrap: true,
-        )));
+        home: CalendarGrid(
+          columns: 2,
+          numberOfMonths: 4,
+          startMonth: '2024-03-01',
+          callback: onDayClicked,
+        ));
   }
 }
