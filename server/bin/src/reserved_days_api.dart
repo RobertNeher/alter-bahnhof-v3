@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
+import 'package:model/reserved_days.dart';
 import 'package:settings/settings.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -24,6 +25,45 @@ class ReservedDaysApi {
       int size = await reservedDaysCollection.count();
       return Response.ok(jsonEncode({'size': size.toString()}),
           headers: responseHeaders);
+    });
+
+    // .../all?startDate=yyyy-MM-dd&endDate=yyyy-MM-dd&managementView=[Y|N]
+    router.get('/all', (Request request) async {
+      DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
+      Map<String, dynamic> parameters = request.url.queryParameters;
+      bool managementView = false;
+
+      // Default date: Starting month/year of Seminarhaus
+      String start =
+          parameters['startDate'] ?? settings['alterBahnhofStartDate'];
+      String end = parameters['endDate'] ?? df.format(DateTime.now());
+
+      if (parameters['managementView'] != null) {
+        managementView =
+            parameters['managementView'].toUpperCase().substring(0, 1) == 'Y';
+      } else {
+        managementView = false;
+      }
+      List<Map<String, dynamic>> allDates = [];
+      await reservedDaysCollection
+          .find(where
+            ..gte('blockedDay',
+                DateFormat(settings['alterBahnhofDateFormat']).parse(start))
+            ..and(where.lte(
+                'blockedDay',
+                DateFormat(settings['alterBahnhofDateFormat'])
+                    .parse(end)
+                    .add(Duration(days: 1))))
+            ..sortBy('blockedDay', descending: false))
+          .forEach((day) {
+        allDates.add({
+          'id': day['_id'].toString(),
+          'blockedDay': day['blockedDay'].toString(),
+          'comment': managementView ? day['comment'] : '',
+        });
+      });
+
+      return Response.ok(jsonEncode(allDates), headers: responseHeaders);
     });
 
     // .../check?day=yyyy-MM-dd
