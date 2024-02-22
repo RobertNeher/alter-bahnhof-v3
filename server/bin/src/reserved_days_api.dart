@@ -26,25 +26,21 @@ class ReservedDaysApi {
           headers: responseHeaders);
     });
 
-    // .../check?yyyy-MM-dd&managementView=[Y|N]
+    // .../check?day=yyyy-MM-dd
     router.get('/check', (Request request) async {
       DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
       Map<String, dynamic> parameters = request.url.queryParameters;
-      bool managementView = false;
 
-      if (parameters['managementView'] ==
-          null) if (parameters['managementView'] != null) {
-        managementView =
-            parameters['managementView'].toUpperCase().substring(0, 1) == 'Y';
-      } else {
-        managementView = false;
-      }
       String day = parameters['day'];
 
-      var result = await reservedDaysCollection.findOne(where
-        ..eq('blockedDay',
-            DateFormat(settings['alterBahnhofDateFormat']).parse(day)));
-      return Response.ok(jsonEncode(result), headers: responseHeaders);
+      var result = await reservedDaysCollection
+          .find(where.gte('blockedDay', df.parse(day))
+            ..and(
+                where.lte('blockedDay', df.parse(day).add(Duration(days: 1)))))
+          .toList();
+      return Response.ok(
+          jsonEncode(result.isNotEmpty ? result.length > 0 : false),
+          headers: responseHeaders);
     });
 
     router.get('/<something|.*>', (Request request, String something) async {
