@@ -149,7 +149,7 @@ class BookingsApi {
           headers: responseHeaders);
     });
 
-    //.../blockedDays?from=yyyy-MM-dd&to=yyyy-MM-dd[&managementView=y/n]
+    //.../blockedDays?startDate=yyyy-MM-dd&endDate=yyyy-MM-dd[&managementView=y/n]
     router.get('/blockedDays', (Request request) async {
       bool managementView = false;
       String start, end;
@@ -158,8 +158,8 @@ class BookingsApi {
       Map<String, dynamic> parameters = request.url.queryParameters;
 
       // Default date: Starting month/year of Seminarhaus
-      start = parameters['from'] ?? settings['alterBahnhofStartDate'];
-      end = parameters['to'] ?? df.format(DateTime.now());
+      start = parameters['startDate'] ?? settings['alterBahnhofStartDate'];
+      end = parameters['endDate'] ?? df.format(DateTime.now());
 
       if (parameters['managementView'] != null) {
         managementView =

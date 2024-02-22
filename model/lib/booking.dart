@@ -187,8 +187,8 @@ Future<List<Booking>> fetchBlockedDays(
   Uri uri = Uri.http(
       '${settings["alterBahnhofHost"]}:${settings["alterBahnhofPort"]}',
       '/bookings/blockedDays', {
-    'from': startDate,
-    'to': endDate,
+    'startDate': startDate,
+    'endDate': endDate,
     'managementView': managementView ? 'y' : 'n'
   });
 
