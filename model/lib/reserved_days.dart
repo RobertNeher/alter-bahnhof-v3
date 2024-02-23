@@ -32,6 +32,11 @@ class ReservedDay {
       'comment': day._comment,
     };
   }
+
+  @override
+  String toString() {
+    return 'Id: $_id,\nblockedDay: ${DateFormat(settings["alterBahnhofDateFormat"]).format(_blockedDay!)},\ncomment: $_comment';
+  }
 }
 
 Future<List<ReservedDay>> fetchReservedDays(
@@ -53,10 +58,10 @@ Future<List<ReservedDay>> fetchReservedDays(
 
   if (response.statusCode == 200) {
     List daysRaw = jsonDecode(response.body);
-
     for (Map<String, dynamic> day in daysRaw) {
       reservedDays.add(ReservedDay.fromJson(day));
     }
+    return reservedDays;
   }
   return [];
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 Map<String, Color> colorScheme = {
+  'none': Colors.white,
   'primary': Color.fromARGB(255, 76, 132, 99),
   'primaryLight': Color.fromARGB(255, 132, 197, 159),
   'primarySuperLight': Color.fromARGB(172, 185, 255, 214),

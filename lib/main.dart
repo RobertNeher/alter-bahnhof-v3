@@ -21,7 +21,7 @@ class AlterBahnhofApp extends StatelessWidget {
         home: CalendarGrid(
           columns: 2,
           numberOfMonths: 4,
-          startMonth: '2024-03-01',
+          startMonth: '2024-02-01',
           callback: onDayClicked,
         ));
   }

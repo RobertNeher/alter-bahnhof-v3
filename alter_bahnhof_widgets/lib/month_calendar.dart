@@ -18,7 +18,7 @@ class MonthCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
+    // DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
 
     return Container(
         child: FutureBuilder<Map<String, dynamic>>(
@@ -121,7 +121,7 @@ class MonthCalendar extends StatelessWidget {
                     Color fontColor = Colors.black;
                     double fontSize = 20;
                     FontWeight fontWeight = FontWeight.normal;
-                    Color backgroundColor = Colors.white;
+                    Color backgroundColor = colorScheme['none']!;
                     FontStyle fontStyle = FontStyle.normal;
                     String toolTip = '';
                     String dayText = DateTime.parse(day['date']).day.toString();
@@ -219,6 +219,7 @@ class MonthCalendar extends StatelessWidget {
                                       fontSize: fontSize,
                                       color: fontColor)),
                             ))));
+                    backgroundColor = colorScheme['none']!;
                   }
                 }
                 return Column(

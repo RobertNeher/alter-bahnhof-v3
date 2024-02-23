@@ -92,6 +92,7 @@ class BookingsApi {
       DateTime indexDay = firstDay;
 
       do {
+        status = null;
         dayCategories = [];
         holidayName = isHoliday(holidays, indexDay);
         // status = bookingStatus(bookings, indexDay);
