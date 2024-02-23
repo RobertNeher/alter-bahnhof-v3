@@ -118,6 +118,7 @@ class MonthCalendar extends StatelessWidget {
                       //  "outside"
                       //  day         grey        darkGrey   normal -
                       for (int week = 0; week < weekList.length; week++) {
+                        bool noCallback = false;
                         Map<String, dynamic> day =
                             weekList[week]['weekDays'][i];
                         Color fontColor = Colors.black;
@@ -140,6 +141,7 @@ class MonthCalendar extends StatelessWidget {
                         } else {
                           // booked state
                           if (day['bookingStatus'].contains('booked')) {
+                            noCallback = true;
                             backgroundColor = colorScheme['primary']!;
 
                             if (isSameDay(
@@ -164,6 +166,7 @@ class MonthCalendar extends StatelessWidget {
                           }
 
                           if (day['bookingStatus'].contains('requested')) {
+                            noCallback = true;
                             backgroundColor = colorScheme['primaryLight']!;
 
                             toolTip = managementView
@@ -199,13 +202,15 @@ class MonthCalendar extends StatelessWidget {
                         }
 
                         if (day['bookingStatus'].contains('reserved')) {
+                          noCallback = true;
                           fontColor = Colors.black;
                           backgroundColor = colorScheme['redLight']!;
                           toolTip = 'Reserviert';
                         }
 
                         weekDays.last.children.add(InkWell(
-                            onLongPress: () => callback(day),
+                            onLongPress:
+                                noCallback ? null : () => callback(day),
                             child: Container(
                                 padding:
                                     const EdgeInsets.fromLTRB(15, 0, 10, 0),
