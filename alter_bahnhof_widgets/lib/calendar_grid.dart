@@ -5,7 +5,7 @@ class CalendarGrid extends StatelessWidget {
   int columns = 2;
   String startMonth = '';
   int numberOfMonths = 6;
-  VoidCallback Function() callback;
+  Function(Map<String, dynamic>) callback;
   CalendarGrid(
       {super.key,
       this.columns = 2,

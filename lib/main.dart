@@ -1,4 +1,3 @@
-import 'package:alter_bahnhof_widgets/month_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:alter_bahnhof_widgets/calendar_grid.dart';
 
@@ -6,9 +5,9 @@ void main() {
   runApp(const AlterBahnhofApp());
 }
 
-VoidCallback? Function() onDayClicked() {
-  print("Click");
-  return () {};
+Function(Map<String, dynamic>) onDayClicked(data) {
+  print("Click: $data");
+  return ((p0) => {});
 }
 
 class AlterBahnhofApp extends StatelessWidget {
@@ -22,7 +21,7 @@ class AlterBahnhofApp extends StatelessWidget {
           columns: 2,
           numberOfMonths: 4,
           startMonth: '2024-02-01',
-          callback: onDayClicked,
+          callback: (Map) => onDayClicked(Map),
         ));
   }
 }
