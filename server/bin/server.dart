@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_proxy/shelf_proxy.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
@@ -55,6 +58,10 @@ Future main() async {
   DbCollection bookings = db.collection(settings['bookingsCollection']);
   DbCollection reservedDays = db.collection(settings['reservedDaysCollection']);
   DbCollection users = db.collection(settings['usersCollection']);
+  Uint8List certificateChain =
+      await File('./certificates/AlterBahnhofCert.pem').readAsBytes();
+  String privateKey =
+      await File('./certificates/AlterBahnhofKey.pem').readAsString();
 
   alterBahnhof.mount(
       '/bookings/', BookingsApi(bookingsCollection: bookings).router);
@@ -62,10 +69,10 @@ Future main() async {
       ReservedDaysApi(reservedDaysCollection: reservedDays).router);
   alterBahnhof.mount('/users/', UsersApi(usersCollection: users).router);
 
-  final handler = const Pipeline()
-      .addMiddleware(_fixCORS)
-      .addMiddleware(logRequests())
-      .addHandler(alterBahnhof);
+  // final handler = const Pipeline()
+  //     .addMiddleware(_fixCORS)
+  //     .addMiddleware(logRequests())
+  //     .addHandler(alterBahnhof);
 
   alterBahnhof.all(
       '/<ignored|.*>',
@@ -75,7 +82,17 @@ Future main() async {
   // final server = await HttpServer.bindSecure(InternetAddress.anyIPv4,
   //     settings['alterBahnhofPort'], getSecurityContext());
   final server = await io.serve(
-      alterBahnhof, settings['alterBahnhofHost'], settings['alterBahnhofPort']);
+      const Pipeline()
+          .addMiddleware(logRequests())
+          .addHandler(proxyHandler("http://")),
+      InternetAddress.anyIPv4,
+      443,
+      securityContext: SecurityContext()
+        ..useCertificateChainBytes(certificateChain)
+        ..usePrivateKeyBytes(utf8.encode(privateKey)),
+      alterBahnhof,
+      settings['alterBahnhofHost'],
+      settings['alterBahnhofPort']);
 
   print(
       'Server listening on ${settings['alterBahnhofHost']}:${settings['alterBahnhofPort']}');

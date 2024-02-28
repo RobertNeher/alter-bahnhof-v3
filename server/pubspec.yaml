@@ -18,6 +18,7 @@ dependencies:
     path: '../settings'
   shelf:
   shelf_router:
+  shelf_proxy:
   utils:
     path: '../utils'
 

@@ -1,3 +1,4 @@
+import 'package:alter_bahnhof_widgets/calendar_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:alter_bahnhof_widgets/calendar_grid.dart';
 
@@ -17,11 +18,7 @@ class AlterBahnhofApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: CalendarGrid(
-          columns: 2,
-          numberOfMonths: 4,
-          startMonth: '2024-02-01',
-          callback: (Map) => onDayClicked(Map),
-        ));
+      home: CalendarSelector(),
+    );
   }
 }
