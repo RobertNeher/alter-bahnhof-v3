@@ -14,7 +14,7 @@ Map<String, dynamic> settings = {
   'bookingStatusCollection': 'BookingStatus',
   'reservedDaysCollection': 'ReservedDays',
   'alterBahnhofStartDate': '2017-09-01',
-  'certicatePath': '../../server/certificates',
+  'certicatePath': '../server/certificates',
   'bookingYearSpan': 3, //years from today
   'weekDays': ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
   'dayBoxWidth': 50,
