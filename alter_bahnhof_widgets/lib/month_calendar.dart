@@ -18,11 +18,8 @@ class MonthCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // DateFormat df = DateFormat(settings['alterBahnhofDateFormat']);
-
     return Card(
-        child: Container(
-            child: FutureBuilder<Map<String, dynamic>>(
+        child: FutureBuilder<Map<String, dynamic>>(
                 future: getCalendarBasics(month, managementView),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -267,6 +264,6 @@ class MonthCalendar extends StatelessWidget {
                                 fontSize: 24,
                                 color: Colors.red)));
                   }
-                })));
+            }));
   }
 }

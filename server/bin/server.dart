@@ -58,10 +58,10 @@ Future main() async {
   DbCollection bookings = db.collection(settings['bookingsCollection']);
   DbCollection reservedDays = db.collection(settings['reservedDaysCollection']);
   DbCollection users = db.collection(settings['usersCollection']);
-  Uint8List certificateChain =
-      await File('./certificates/AlterBahnhofCert.pem').readAsBytes();
-  String privateKey =
-      await File('./certificates/AlterBahnhofKey.pem').readAsString();
+  // Uint8List certificateChain =
+  //     await File('./certificates/AlterBahnhofCert.pem').readAsBytes();
+  // String privateKey =
+  //     await File('./certificates/AlterBahnhofKey.pem').readAsString();
 
   alterBahnhof.mount(
       '/bookings/', BookingsApi(bookingsCollection: bookings).router);
@@ -81,19 +81,30 @@ Future main() async {
 
   // final server = await HttpServer.bindSecure(InternetAddress.anyIPv4,
   //     settings['alterBahnhofPort'], getSecurityContext());
-  final server = await io.serve(
-      const Pipeline()
-          .addMiddleware(logRequests())
-          .addHandler(proxyHandler("http://")),
-      InternetAddress.anyIPv4,
-      443,
-      securityContext: SecurityContext()
-        ..useCertificateChainBytes(certificateChain)
-        ..usePrivateKeyBytes(utf8.encode(privateKey)),
-      alterBahnhof,
-      settings['alterBahnhofHost'],
-      settings['alterBahnhofPort']);
+  // const Pipeline()
+  //     .addMiddleware(logRequests())
+  //     .addHandler(proxyHandler("http://")),
+  // InternetAddress.anyIPv4,
+  // 443,
+  // securityContext: SecurityContext()
+  //   ..useCertificateChainBytes(certificateChain)
+  //   ..usePrivateKeyBytes(utf8.encode(privateKey)),
+  // alterBahnhof,
+  // settings['alterBahnhofHost'],
+  // settings['alterBahnhofPort']);
+  final handler = const Pipeline()
+      .addMiddleware(_fixCORS)
+      .addMiddleware(logRequests())
+      .addHandler(alterBahnhof);
 
+  ////////////////// THE UNKNOWN STUFF////////////////////
+  alterBahnhof.all(
+      '/<ignored|.*>',
+      (Request request) =>
+          Response.ok('This is the Alter Bahnhof API service'));
+
+  final server = await io.serve(
+      alterBahnhof, settings['alterBahnhofHost'], settings['alterBahnhofPort']);
   print(
       'Server listening on ${settings['alterBahnhofHost']}:${settings['alterBahnhofPort']}');
 }
